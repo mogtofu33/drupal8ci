@@ -23,11 +23,10 @@ stages:
 
 variables:
   DRUPAL_STABLE_8: '8.9'
-  DRUPAL_STABLE_8_PHP: '7.4'
   DRUPAL_LEGACY_9: '9.1'
-  DRUPAL_LEGACY_9_PHP: '7.4'
   DRUPAL_STABLE_9: '9.2'
-  DRUPAL_STABLE_9_PHP: '8.0'
+  DRUPAL_8_PHP: '7.4'
+  DRUPAL_9_PHP: '8.0'
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DRIVER: overlay2
   RELEASE_REGISTRY: docker.io
@@ -75,20 +74,20 @@ variables:
 current_8:
   extends: .build_test_release
   variables:
-    IMAGE_BASE: drupal:${DRUPAL_STABLE_8}-php${DRUPAL_STABLE_8_PHP}
+    IMAGE_BASE: drupal:${DRUPAL_STABLE_8}-php${DRUPAL_8_PHP}
     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_STABLE_8}
     DIR: '${DRUPAL_STABLE_8}'
 
 legacy_9:
   extends: .build_test_release
   variables:
-    IMAGE_BASE: drupal:${DRUPAL_LEGACY_9}-php${DRUPAL_LEGACY_9_PHP}
+    IMAGE_BASE: drupal:${DRUPAL_LEGACY_9}-php${DRUPAL_9_PHP}
     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_LEGACY_9}
     DIR: '${DRUPAL_LEGACY_9}'
 
 current_9:
   extends: .build_test_release
   variables:
-    IMAGE_BASE: drupal:${DRUPAL_STABLE_9}-php${DRUPAL_STABLE_9_PHP}
+    IMAGE_BASE: drupal:${DRUPAL_STABLE_9}-php${DRUPAL_9_PHP}
     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_STABLE_9}
     DIR: '${DRUPAL_STABLE_9}'

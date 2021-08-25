@@ -1,9 +1,8 @@
 DRUPAL_STABLE_8=8.9
-DRUPAL_STABLE_8_PHP=7.4
 DRUPAL_LEGACY_9=9.1
-DRUPAL_LEGACY_9_PHP=7.4
 DRUPAL_STABLE_9=9.2
-DRUPAL_STABLE_9_PHP=8.0
+DRUPAL_8_PHP=7.4
+DRUPAL_9_PHP=8.0
 
 TPL=tpl/common
 
@@ -17,8 +16,8 @@ define prepare
 endef
 
 prepare:
-	$(call prepare,${DRUPAL_STABLE_8},${DRUPAL_STABLE_8_PHP})
-	$(call prepare,${DRUPAL_LEGACY_9},${DRUPAL_LEGACY_9_PHP})
-	$(call prepare,${DRUPAL_STABLE_9},${DRUPAL_STABLE_9_PHP})
+	$(call prepare,${DRUPAL_STABLE_8},${DRUPAL_8_PHP})
+	$(call prepare,${DRUPAL_LEGACY_9},${DRUPAL_9_PHP})
+	$(call prepare,${DRUPAL_STABLE_9},${DRUPAL_9_PHP})
 
 .PHONY: prepare
