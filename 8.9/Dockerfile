@@ -67,7 +67,7 @@ RUN /usr/local/bin/composer selfupdate --2
 COPY --chown=www-data:www-data composer.json /var/www/.composer/composer.json
 
 RUN chmod 777 /var/www \
-  && chown -R www-data:www-data /var/www
+  && chown -R www-data:www-data /var/www \
   # Phpunit 9+ cache.
   && chown www-data:www-data /opt/drupal/web/core
 
