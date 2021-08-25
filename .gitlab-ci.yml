@@ -5,10 +5,9 @@ default:
   before_script:
     - docker --version
     - echo -e "\033[1;36m DO_RELEASE:$DO_RELEASE RELEASE_IMAGE:$RELEASE_IMAGE SKIP_CACHE:$SKIP_CACHE \033[0;37m"
-    - echo -e "\033[1;36m DRUPAL_CURRENT:$DRUPAL_CURRENT DRUPAL_TRANSITION:$DRUPAL_TRANSITION DRUPAL_DEV:$DRUPAL_DEV \033[0;37m"
+    - echo -e "\033[1;36m DRUPAL_STABLE_8:$DRUPAL_STABLE_8 DRUPAL_LEGACY_9:$DRUPAL_LEGACY_9 DRUPAL_STABLE_9:$DRUPAL_STABLE_9 \033[0;37m"
     # Pull base image from Docker hub.
     - docker pull --quiet $IMAGE_BASE || true
-    - if [ ! $EXTRA_IMAGE == 0 ]; then docker pull --quiet $EXTRA_IMAGE || true; fi
     # Login to Gitlab and pull current image if exist.
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
     - echo -e "\033[1;36m Pull $CI_REGISTRY_IMAGE/$IMAGE \033[0;37m"
@@ -23,9 +22,12 @@ stages:
   - build
 
 variables:
-  DRUPAL_CURRENT: '8.9'
-  DRUPAL_TRANSITION: '9.0'
-  DRUPAL_DEV: '9.1'
+  DRUPAL_STABLE_8: '8.9'
+  DRUPAL_STABLE_8_PHP: '7.4'
+  DRUPAL_LEGACY_9: '9.1'
+  DRUPAL_LEGACY_9_PHP: '7.4'
+  DRUPAL_STABLE_9: '9.2'
+  DRUPAL_STABLE_9_PHP: '8.0'
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DRIVER: overlay2
   RELEASE_REGISTRY: docker.io
@@ -35,9 +37,9 @@ variables:
   # Cache seems too hard, skip by default...
   SKIP_CACHE: 0
   SKIP_TESTS: 0
-  EXTRA_IMAGE: 0
 
 .build_test_release:
+  stage: build
   script:
     # Build the image.
     - echo -e "\033[1;36m Build $CI_REGISTRY_IMAGE/$IMAGE from $DIR \033[0;37m"
@@ -70,29 +72,23 @@ variables:
     # Print versions for information.
     - docker run --rm -t $CI_REGISTRY_IMAGE/$IMAGE /scripts/run-tests.sh
 
-current:
-  stage: build
+current_8:
   extends: .build_test_release
   variables:
-    # Base official image.
-    IMAGE_BASE: drupal:${DRUPAL_CURRENT}-apache
-    IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
-    DIR: '${DRUPAL_CURRENT}'
+    IMAGE_BASE: drupal:${DRUPAL_STABLE_8}-php${DRUPAL_STABLE_8_PHP}
+    IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_STABLE_8}
+    DIR: '${DRUPAL_STABLE_8}'
 
-transition:
-  stage: build
+legacy_9:
   extends: .build_test_release
   variables:
-    # Base official image.
-    IMAGE_BASE: drupal:${DRUPAL_CURRENT}-apache
-    IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_TRANSITION}
-    DIR: '${DRUPAL_TRANSITION}'
+    IMAGE_BASE: drupal:${DRUPAL_LEGACY_9}-php${DRUPAL_LEGACY_9_PHP}
+    IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_LEGACY_9}
+    DIR: '${DRUPAL_LEGACY_9}'
 
-dev:
-  stage: build
+current_9:
   extends: .build_test_release
   variables:
-    # Base official image.
-    IMAGE_BASE: drupal:${DRUPAL_CURRENT}-apache
-    IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_DEV}
-    DIR: '${DRUPAL_DEV}'
+    IMAGE_BASE: drupal:${DRUPAL_STABLE_9}-php${DRUPAL_STABLE_9_PHP}
+    IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_STABLE_9}
+    DIR: '${DRUPAL_STABLE_9}'

@@ -9,9 +9,8 @@ Used with project [Gitlab CI Drupal](https://gitlab.com/mog33/gitlab-ci-drupal).
 
 * Fork from [juampynr/drupal8ci](https://hub.docker.com/r/juampynr/drupal8ci/~/dockerfile/)
 * Based on [Drupal official image](https://github.com/docker-library/drupal), added
-  * [Node.js 10](https://nodejs.org/en/) + [Yarn](https://yarnpkg.com)
-  * [Google chrome stable](https://dl.google.com/linux/chrome/deb/)  + [Chromedriver](http://chromedriver.chromium.org)
-  * [Composer prestissimo plugin](https://github.com/hirak/prestissimo)
+  * [Node.js](https://nodejs.org/en/) + [Yarn](https://yarnpkg.com)
+  * [Google chrome stable](https://dl.google.com/linux/chrome/deb/) + [Chromedriver](http://chromedriver.chromium.org)
   * [Robo CI](http://robo.li)
   * [Phpqa](https://github.com/EdgedesignCZ/phpqa) including:
     * [Phpmetrics](https://www.phpmetrics.org)
@@ -35,7 +34,7 @@ To use with a local Drupal 8/9 managed by Composer, mount your Drupal on `/opt/d
 
 ## Issues
 
-* Force phpcpd to v5 (and `phpunit/php-timer:3.1.4`) until this [issue](https://github.com/EdgedesignCZ/phpqa/pull/209) is resolved.
+* ...
 
 ## Build
 

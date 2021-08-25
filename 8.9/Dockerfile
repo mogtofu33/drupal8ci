@@ -1,10 +1,10 @@
 # https://hub.docker.com/r/juampynr/drupal8ci/~/dockerfile/
 # https://github.com/docker-library/drupal/blob/master/8.9/php7.4/apache-buster/Dockerfile
-FROM drupal:8.9-apache
+FROM drupal:8.9-php7.4
 
 LABEL maintainer="dev-drupal.com"
 
-# Install needed programs for next steps.
+# Install needed programs.
 RUN apt-get update && apt-get install --no-install-recommends -y \
   apt-transport-https \
   ca-certificates \
@@ -13,35 +13,39 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   sudo \
   curl \
   ssh \
+  git \
+  unzip \
+  vim \
+  jq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #==================
-# Install Nodejs, Yarn, Chrome, php extensions, needed programs.
+# Install Nodejs, Yarn, Chrome.
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
   && curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
   && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-  # Google Chrome latest stable release.
+  # Google Chrome latest stable release repo.
   && curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-  && apt-get update && apt-get install --no-install-recommends -y \
+  && pecl channel-update pecl.php.net && apt-get update && apt-get install --no-install-recommends -y \
   nodejs \
   yarn \
   google-chrome-stable \
+  # Install PHP extensions.
+  libicu-dev \
   imagemagick \
   libmagickwand-dev \
   libnss3-dev \
   libssl-dev \
   libxslt-dev \
   mariadb-client \
-  jq \
-  git \
-  unzip \
-  vim \
-  # Install intl, xsl, mysqli, xdebug, imagick, bcmath.
+  # https://github.com/mlocati/docker-php-extension-installer
   && docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp \
   && pecl install imagick xdebug \
   && docker-php-ext-enable imagick xdebug \
+  # Cleanup.
+  && docker-php-source delete \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -58,28 +62,29 @@ RUN curl -fsSL https://chromedriver.storage.googleapis.com/$(curl -s https://chr
   && mkdir -p /home/chromeuser && chown -R chromeuser:chromeuser /home/chromeuser
 
 #==================
-# Composer is included in base image:
-# https://github.com/docker-library/drupal/blob/master/8.9/php7.4/apache-buster/Dockerfile#L60
+# Composer update.
+RUN /usr/local/bin/composer selfupdate --2
 COPY --chown=www-data:www-data composer.json /var/www/.composer/composer.json
 
-RUN chmod 777 /var/www /opt/drupal \
-  && chown -R www-data:www-data /var/www /opt/drupal
+RUN chmod 777 /var/www \
+  && chown -R www-data:www-data /var/www
+  # Phpunit 9+ cache.
+  && chown www-data:www-data /opt/drupal/web/core
 
 USER www-data
 
 # Manage Composer.
 WORKDIR /var/www/.composer
 
-# Put a turbo on composer, install phpqa + tools + Robo + Coder.
-# see composer.json
-RUN COMPOSER_MEMORY_LIMIT=-1 composer install --no-interaction --no-ansi --no-suggest \
+# Install our tools, see composer.json
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install --no-interaction --no-ansi \
   && composer clear-cache
 
 WORKDIR /opt/drupal
 
 USER root
 
-# Add dev, drush and update phpunit based on how official image use composer.
+# Add drupal core-dev, drush.
 RUN set -eux; \
   export COMPOSER_HOME="$(mktemp -d)"; \
   COMPOSER_MEMORY_LIMIT=-1 composer require "drupal/core-dev:~8.9.0" "drush/drush:^10" --working-dir="/opt/drupal" --no-interaction --no-ansi --no-suggest; \
