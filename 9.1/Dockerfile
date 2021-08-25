@@ -1,6 +1,6 @@
 # https://hub.docker.com/r/juampynr/drupal8ci/~/dockerfile/
-# https://github.com/docker-library/drupal/blob/master/9.1/php7.4/apache-buster/Dockerfile
-FROM drupal:9.1-php7.4
+# https://github.com/docker-library/drupal/blob/master/9.1/php8.0/apache-buster/Dockerfile
+FROM drupal:9.1-php8.0
 
 LABEL maintainer="dev-drupal.com"
 
