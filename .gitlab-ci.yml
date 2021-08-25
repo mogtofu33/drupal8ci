@@ -34,7 +34,7 @@ variables:
   # Publish result image to Docker Hub.
   DO_RELEASE: 1
   # Cache seems too hard, skip by default...
-  SKIP_CACHE: 0
+  SKIP_CACHE: 1
   SKIP_TESTS: 0
 
 .build_test_release:
