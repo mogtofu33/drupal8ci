@@ -97,7 +97,7 @@ RUN chmod 777 /var/www \
   # Convenient alias for root and www-data.
   && echo "alias ls='ls --color=auto -lAh'" >> /root/.bashrc \
   && echo "alias l='ls --color=auto -lAh'" >> /root/.bashrc \
-  && echo "alias dr='drush --root=/opt/drupal'" >> /root/.bashrc \
+  && echo "alias dr='drush --root=/opt/drupal/web'" >> /root/.bashrc \
   && cp /root/.bashrc /var/www/.bashrc \
   && chown www-data:www-data /var/www/.bashrc
 

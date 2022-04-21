@@ -18,6 +18,8 @@ define prepare
 	@cp -r ./${TPL}/ ./$(1)/;
 	@IMAGE_TAG="$(1)" PHP_VERSION="$(2)" CORE_DEV="$(3)" envsubst < "./$(TPL)/Dockerfile" > "./$(1)/Dockerfile";
 	@IMAGE_TAG="$(1)" envsubst < "./$(TPL)/composer.json" > "./$(1)/composer.json";
+	@PHP_VERSION="$(2)" envsubst < "./$(TPL)/tests/test_php.py" > "./$(1)/tests/test_php.py";
+	@DRUPAL_VERSION="$(1)" envsubst < "./$(TPL)/tests/test_drush.py" > "./$(1)/tests/test_drush.py";
 	@echo "...Done!"
 endef
 
