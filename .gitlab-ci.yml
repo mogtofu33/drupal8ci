@@ -38,7 +38,7 @@ variables:
 
 .scripts:
   tests:
-    - if [[ -d ./$BUILD_DIR/tests ]]; then ./.gitlab/run-tests.sh $CI_REGISTRY_IMAGE/$IMAGE; fi;
+    - if [[ -d ./$BUILD_DIR/tests ]]; then ./.gitlab-ci/run-tests.sh $CI_REGISTRY_IMAGE/$IMAGE; fi;
     # - |
     #   if [[ -d ./$BUILD_DIR/tests ]]; then
     #     _cid=$(docker run --rm -d $CI_REGISTRY_IMAGE/$IMAGE);
