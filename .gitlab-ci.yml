@@ -1,0 +1,139 @@
+default:
+  image: docker:20
+  services:
+    - docker:20-dind
+  before_script:
+    - docker --version
+    # Pull base image from Docker hub.
+    - docker pull --quiet $IMAGE_BASE || true
+    # Login to Gitlab and pull current image if exist.
+    - echo "$CI_JOB_TOKEN" | docker login registry.gitlab.com --username gitlab-ci-token --password-stdin
+    - echo -e "\033[1;36m Pull $CI_REGISTRY_IMAGE/$IMAGE \033[0;37m"
+    - docker pull --quiet $CI_REGISTRY_IMAGE/$IMAGE || true
+  artifacts:
+    reports:
+      junit: report.xml
+
+stages:
+  - build
+  - publish
+
+variables:
+  # Drupal variables.
+  DRUPAL_PREVIOUS: '9.2'
+  DRUPAL_PREVIOUS_PHP: '8.0'
+  DRUPAL_CURRENT: '9.3'
+  DRUPAL_CURRENT_PHP: '8.0'
+  DRUPAL_NEXT: '10.0-rc'
+  DRUPAL_NEXT_PHP: '8.1'
+  # Docker variables.
+  DOCKER_HOST: tcp://docker:2375
+  RELEASE_REGISTRY: docker.io
+  RELEASE_IMAGE: index.docker.io/$RELEASE_USER
+  # Enable buildkit to use '--from-cache' when 'docker build'.
+  DOCKER_BUILDKIT: 1
+  DO_RELEASE:
+    value: "1"
+    description: Publish the image to docker, set 0 to not publish.
+
+.scripts:
+  tests:
+    - |
+      if [[ -d ./$BUILD_DIR/tests ]]; then
+        _cid=$(docker run --rm -d $CI_REGISTRY_IMAGE/$IMAGE);
+        echo -e "[info] $_cid";
+        docker ps;
+        if [ ! docker exec $_cid /tests/tests.sh; ]; then
+          docker logs $_cid -n 20;
+          exit 1;
+        fi
+        docker exec -w /tests $_cid pytest --junit-xml junit.xml;
+        docker cp $_cid:/tests/junit.xml junit.xml;
+        docker stop $_cid;
+      fi;
+
+.build_test:
+  stage: build
+  script:
+    # Build the image.
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0K\e[1;34m Build $CI_REGISTRY_IMAGE/$IMAGE from $BUILD_DIR"
+    - docker build
+      --compress
+      --build-arg BUILDKIT_INLINE_CACHE=1
+      --cache-from $CI_REGISTRY_IMAGE/$IMAGE
+      --tag $CI_REGISTRY_IMAGE/$IMAGE
+      $BUILD_DIR
+    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
+    - docker images
+    - !reference [.scripts, tests]
+
+# .publish:
+#   stage: publish
+#   rules:
+#     - if: '$DO_RELEASE == "1"'
+#       when: on_success
+#     - when: never
+#   script:
+#     # Tag and push to target registry.
+#     - docker tag $CI_REGISTRY_IMAGE/$IMAGE $RELEASE_IMAGE/$IMAGE
+#     - docker images
+#     # Login to Docker hub, tag and push.
+#     - |
+#       echo -e "\e[0Ksection_start:`date +%s`:release[collapsed=true]\r\e[0K\e[1;34m Push $RELEASE_IMAGE/$IMAGE to $RELEASE_REGISTRY with user $RELEASE_USER"
+#       echo "$RELEASE_PASSWORD" | docker login $RELEASE_REGISTRY --username $RELEASE_USER --password-stdin
+#       docker push $RELEASE_IMAGE/$IMAGE
+#       echo -e "\e[0Ksection_end:`date +%s`:release\r\e[0K"
+
+# previous:
+#   extends: .build_test
+#   variables:
+#     IMAGE_BASE: drupal:${DRUPAL_PREVIOUS}-php${DRUPAL_PREVIOUS_PHP}
+#     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_PREVIOUS}
+#     DIR: '${DRUPAL_PREVIOUS}'
+
+# previous_publish:
+#   extends: .publish
+#   variables:
+#     IMAGE_BASE: drupal:${DRUPAL_PREVIOUS}-php${DRUPAL_PREVIOUS_PHP}
+#     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_PREVIOUS}
+
+current:
+  extends: .build_test
+  variables:
+    IMAGE_BASE: drupal:${DRUPAL_CURRENT}-php${DRUPAL_CURRENT_PHP}
+    IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
+    DIR: '${DRUPAL_CURRENT}'
+
+# current_publish:
+#   extends: .publish
+#   variables:
+#     IMAGE_BASE: drupal:${DRUPAL_CURRENT}-php${DRUPAL_CURRENT_PHP}
+#     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
+
+# next:
+#   extends: .build_test
+#   variables:
+#     IMAGE_BASE: drupal:${DRUPAL_NEXT}-php${DRUPAL_NEXT_PHP}
+#     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-10.0
+#     DIR: '${DRUPAL_NEXT}'
+
+# next_publish:
+#   extends: .publish
+#   variables:
+#     IMAGE_BASE: drupal:${DRUPAL_NEXT}-php${DRUPAL_NEXT_PHP}
+#     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-10.0
+
+# chrome-headless:
+#   extends: .build_test
+#   variables:
+#     IMAGE_BASE: debian:bullseye-slim
+#     IMAGE: chrome-headless:${CI_COMMIT_BRANCH}
+#     DIR: chrome-headless
+#     NO_TESTS: 1
+
+# chrome-headless_publish:
+#   extends: .publish
+#   variables:
+#     IMAGE_BASE: debian:bullseye-slim
+#     IMAGE: chrome-headless:${CI_COMMIT_BRANCH}
+#     NO_TESTS: 1

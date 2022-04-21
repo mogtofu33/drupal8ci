@@ -1,0 +1,24 @@
+{
+    "name": "mog33/drupal8ci",
+    "description": "Packages for CI with Drupal $IMAGE_TAG for https://gitlab.com/mog33/drupal8ci.",
+    "type": "project",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "edgedesign/phpqa": "^1.25",
+        "consolidation/robo": "^3",
+        "drupal/coder": "^8.3",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+        "phpstan/phpstan": "^1.4",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "mglaman/phpstan-drupal": "^1.1",
+        "php-parallel-lint/php-parallel-lint": "^1.3"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        }
+    }
+}

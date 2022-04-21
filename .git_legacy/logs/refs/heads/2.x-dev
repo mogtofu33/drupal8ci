@@ -1,0 +1,8 @@
+0000000000000000000000000000000000000000 625ba300044071fac18e092bc6c41499e736427b Jean Valverde <moimog33@gmail.com> 1601112206 +0200	clone: from git@gitlab.com:mog33/drupal8ci.git
+625ba300044071fac18e092bc6c41499e736427b c40144a0628d22004c6275cd161ae79a37051993 Jean Valverde <moimog33@gmail.com> 1601116761 +0200	commit: feat(): official images now uses composer
+c40144a0628d22004c6275cd161ae79a37051993 fccb8b9522e52798195aa758fe4a9a1e751cee7d Jean Valverde <moimog33@gmail.com> 1601117189 +0200	commit: fix(): base folder
+fccb8b9522e52798195aa758fe4a9a1e751cee7d 1905d9ff89ecb7cbe3d89b8d3b65f15fcd22b581 Jean Valverde <moimog33@gmail.com> 1601724467 +0200	commit: fix(): add phpcpd issue, update doc
+1905d9ff89ecb7cbe3d89b8d3b65f15fcd22b581 3c9e818ea72da319300e375a2c717148227ab63e Jean Valverde <moimog33@gmail.com> 1601724489 +0200	commit: feat(): add version test as a final step
+3c9e818ea72da319300e375a2c717148227ab63e 821e836a0ad5fc39a6ad7fea0660935bbd751042 Jean Valverde <moimog33@gmail.com> 1601724507 +0200	commit: fix(): downgrade phpcpd to v5
+821e836a0ad5fc39a6ad7fea0660935bbd751042 c9b64157774c135df8136b36e39ffb863052d809 Jean Valverde <moimog33@gmail.com> 1601726225 +0200	commit: fix(): official image link
+c9b64157774c135df8136b36e39ffb863052d809 8e03051e048ed034d3e37ed38030f4801243dce0 Jean Valverde <moimog33@gmail.com> 1601726253 +0200	commit: fix(): /var/www/html is now /opt/drupal based on official image
