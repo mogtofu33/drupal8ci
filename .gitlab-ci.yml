@@ -65,9 +65,9 @@ variables:
     #   $BUILD_DIR
 
     - docker build
-      --tag $CI_REGISTRY_IMAGE/$IMAGE:${CI_COMMIT_BRANCH}
+      --tag $CI_REGISTRY_IMAGE/$IMAGE
       --compress
-      --cache-from $CI_REGISTRY_IMAGE/$IMAGE:${CI_COMMIT_BRANCH}
+      --cache-from $CI_REGISTRY_IMAGE/$IMAGE
       --build-arg BUILDKIT_INLINE_CACHE=1
       $BUILD_DIR
 
@@ -96,40 +96,40 @@ variables:
 #   extends: .build_test
 #   variables:
 #     IMAGE_BASE: drupal:${DRUPAL_PREVIOUS}-php${DRUPAL_PREVIOUS_PHP}
-#     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_PREVIOUS}
+#     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_PREVIOUS}
 #     DIR: '${DRUPAL_PREVIOUS}'
 
 # previous_publish:
 #   extends: .publish
 #   variables:
 #     IMAGE_BASE: drupal:${DRUPAL_PREVIOUS}-php${DRUPAL_PREVIOUS_PHP}
-#     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_PREVIOUS}
+#     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_PREVIOUS}
 
 current:
   extends: .build_test
   variables:
     IMAGE_BASE: drupal:${DRUPAL_CURRENT}-php${DRUPAL_CURRENT_PHP}
-    IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
+    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
     DIR: '${DRUPAL_CURRENT}'
 
 # current_publish:
 #   extends: .publish
 #   variables:
 #     IMAGE_BASE: drupal:${DRUPAL_CURRENT}-php${DRUPAL_CURRENT_PHP}
-#     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
+#     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
 
 # next:
 #   extends: .build_test
 #   variables:
 #     IMAGE_BASE: drupal:${DRUPAL_NEXT}-php${DRUPAL_NEXT_PHP}
-#     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-10.0
+#     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-10.0
 #     DIR: '${DRUPAL_NEXT}'
 
 # next_publish:
 #   extends: .publish
 #   variables:
 #     IMAGE_BASE: drupal:${DRUPAL_NEXT}-php${DRUPAL_NEXT_PHP}
-#     IMAGE: drupal8ci:${CI_COMMIT_BRANCH}-10.0
+#     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-10.0
 
 # chrome-headless:
 #   extends: .build_test
