@@ -56,14 +56,22 @@ variables:
   stage: build
   script:
     # Build the image.
-    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0K\e[1;34m Build $CI_REGISTRY_IMAGE/$IMAGE from $BUILD_DIR"
+    # - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0K\e[1;34m Build $CI_REGISTRY_IMAGE/$IMAGE from $BUILD_DIR"
+    # - docker build
+    #   --compress
+    #   --build-arg BUILDKIT_INLINE_CACHE=1
+    #   --cache-from $CI_REGISTRY_IMAGE/$IMAGE
+    #   --tag $CI_REGISTRY_IMAGE/$IMAGE
+    #   $BUILD_DIR
+
     - docker build
+      --tag $CI_REGISTRY_IMAGE/$IMAGE:${CI_COMMIT_BRANCH}
       --compress
+      --cache-from $CI_REGISTRY_IMAGE/$IMAGE:${CI_COMMIT_BRANCH}
       --build-arg BUILDKIT_INLINE_CACHE=1
-      --cache-from $CI_REGISTRY_IMAGE/$IMAGE
-      --tag $CI_REGISTRY_IMAGE/$IMAGE
       $BUILD_DIR
-    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
+
+    # - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
     - docker images
     - !reference [.scripts, tests]
 
