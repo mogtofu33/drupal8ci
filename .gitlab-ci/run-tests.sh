@@ -1,33 +1,32 @@
-#!/usr/bin/env sh
-
-set -e
+#!/bin/bash
+set -eu
 
 _repository=${1:-}
 
-if [ -z $_repository ]
-then
-  echo -e "\e[1;31m[ERROR] Docker Image as argument is mandatory.\e[0m"
+if [ -z "${_repository}" ]; then
+  printf "\e[1;31m[ERROR] Docker Image as argument is mandatory.\e[0m\\n"
   exit 1
 fi
 
-echo -e "[info] Launch container: $_repository"
+printf "[info] Launch container: %s\\n" "${_repository}"
 
-_cid=$(docker run --rm -d $_repository)
+_cid=$(docker run --rm -d ${_repository})
 
-echo -e "[info] $_cid"
+printf "[info] %s\\n" "${_cid}"
 
 docker ps
 
 # Install test programs.
-if ! docker exec $_cid /tests/prepare-tests.sh; then
-  echo -e "[ERROR] exec failed."
-  # -n flag is available with docker 20+.
-  docker logs $_cid -n 20
-  # docker logs $_cid
+if ! docker exec ${_cid} /tests/prepare-tests.sh; then
+  printf "[ERROR] exec failed.\\n"
+  docker logs ${_cid} -n 20
 fi
+
 # Run tests and produce a junit report.
-docker exec -w /tests $_cid pytest --junit-xml junit.xml
-# Report is created insite the image we need to get it.
-docker cp $_cid:/tests/junit.xml junit.xml
+docker exec -w /tests ${_cid} pytest --junit-xml junit.xml
+
+# Report is created inside the image we need to get it.
+docker cp ${_cid}:/tests/junit.xml junit.xml
+
 # Precaution cleanup, because of '--rm' stop will remove the container.
-docker stop $_cid
+docker stop ${_cid}

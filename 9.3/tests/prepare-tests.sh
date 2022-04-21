@@ -2,17 +2,26 @@
 set -eu
 
 _install_packages() {
+
   if ! [ -x "$(command -v python3)" ]; then
-    apk add --no-cache --no-progress --quiet python3
+    if [ -f "/etc/alpine-release" ]; then
+      apk add --no-cache --no-progress --quiet python3
+    else
+      apt update && apt install -y python3
+    fi
   fi
+
   if ! [ -x "$(command -v pip3)" ]; then
     # https://pip.pypa.io/en/stable/installing/
     curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py
     python3 get-pip.py --quiet
   fi
-  # nettoolsis needed for infratest 'socket' using netstat.
-  # default one on Alpine (busybox) is a limited versions.
-  apk add --no-cache --no-progress --quiet net-tools
+
+  if [ -f "/etc/alpine-release" ]; then
+    # nettoolsis needed for infratest 'socket' using netstat.
+    # default one on Alpine (busybox) is a limited versions.
+    apk add --no-cache --no-progress --quiet net-tools
+  fi
 }
 
 _install_testinfra() {
