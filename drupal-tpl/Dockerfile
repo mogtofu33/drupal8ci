@@ -76,8 +76,8 @@ RUN COMPOSER_MEMORY_LIMIT=-1 \
   && composer clear-cache
 
 #==================
-# Tests code.
-COPY --chown=www-data:www-data tests tests
+# Include testing code.
+COPY --chown=www-data:www-data ./tests/ /tests/
 
 #==================
 # Manage final tasks.
