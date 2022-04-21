@@ -38,19 +38,22 @@ variables:
 
 .scripts:
   tests:
-    - |
-      if [[ -d ./$BUILD_DIR/tests ]]; then
-        _cid=$(docker run --rm -d $CI_REGISTRY_IMAGE/$IMAGE);
-        echo -e "[info] $_cid";
-        docker ps;
-        if [ ! docker exec $_cid /tests/tests.sh; ]; then
-          docker logs $_cid -n 20;
-          exit 1;
-        fi
-        docker exec -w /tests $_cid pytest --junit-xml junit.xml;
-        docker cp $_cid:/tests/junit.xml junit.xml;
-        docker stop $_cid;
-      fi;
+    - if [[ -d ./$BUILD_DIR/tests ]]; then ./.gitlab/run-tests.sh $CI_REGISTRY_IMAGE/$IMAGE; fi;
+    # - |
+    #   if [[ -d ./$BUILD_DIR/tests ]]; then
+    #     _cid=$(docker run --rm -d $CI_REGISTRY_IMAGE/$IMAGE);
+    #     echo -e "[info] $_cid";
+    #     docker ps;
+    #     docker exec $_cid /tests/prepare-tests.sh;
+    #     docker exec -w /tests $_cid pytest --junit-xml junit.xml;
+    #     docker cp $_cid:/tests/junit.xml junit.xml;
+    #     docker stop $_cid;
+    #   fi;
+
+# if [ ! docker exec $_cid /tests/tests.sh; ]; then
+#   docker logs $_cid -n 20;
+#   exit 1;
+# fi
 
 .build_test:
   stage: build
@@ -64,7 +67,8 @@ variables:
       $BUILD_DIR
     - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
     - docker images
-    - !reference [.scripts, tests]
+    - docker push $CI_REGISTRY_IMAGE/$IMAGE
+    # - !reference [.scripts, tests]
 
 # .publish:
 #   stage: publish
