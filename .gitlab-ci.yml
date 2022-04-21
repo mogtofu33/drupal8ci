@@ -8,7 +8,6 @@ default:
     - docker pull --quiet $IMAGE_BASE || true
     # Login to Gitlab and pull current image if exist.
     - echo "$CI_JOB_TOKEN" | docker login registry.gitlab.com --username gitlab-ci-token --password-stdin
-    - echo -e "\033[1;36m Pull $CI_REGISTRY_IMAGE/$IMAGE \033[0;37m"
     - docker pull --quiet $CI_REGISTRY_IMAGE/$IMAGE || true
   artifacts:
     reports:
@@ -39,21 +38,6 @@ variables:
 .scripts:
   tests:
     - if [[ -d ./$BUILD_DIR/tests ]]; then ./.gitlab-ci/run-tests.sh $CI_REGISTRY_IMAGE/$IMAGE; fi;
-    # - |
-    #   if [[ -d ./$BUILD_DIR/tests ]]; then
-    #     _cid=$(docker run --rm -d $CI_REGISTRY_IMAGE/$IMAGE);
-    #     echo -e "[info] $_cid";
-    #     docker ps;
-    #     docker exec $_cid /tests/prepare-tests.sh;
-    #     docker exec -w /tests $_cid pytest --junit-xml junit.xml;
-    #     docker cp $_cid:/tests/junit.xml junit.xml;
-    #     docker stop $_cid;
-    #   fi;
-
-# if [ ! docker exec $_cid /tests/tests.sh; ]; then
-#   docker logs $_cid -n 20;
-#   exit 1;
-# fi
 
 .build_test:
   stage: build
