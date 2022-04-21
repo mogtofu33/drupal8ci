@@ -67,8 +67,8 @@ variables:
       $BUILD_DIR
     - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
     - docker images
-    - docker push $CI_REGISTRY_IMAGE/$IMAGE
-    # - !reference [.scripts, tests]
+    - docker push --quiet $CI_REGISTRY_IMAGE/$IMAGE
+    - !reference [.scripts, tests]
 
 # .publish:
 #   stage: publish
