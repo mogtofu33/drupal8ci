@@ -97,7 +97,7 @@ variables:
 #   variables:
 #     IMAGE_BASE: drupal:${DRUPAL_PREVIOUS}-php${DRUPAL_PREVIOUS_PHP}
 #     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_PREVIOUS}
-#     DIR: '${DRUPAL_PREVIOUS}'
+#     BUILD_DIR: '${DRUPAL_PREVIOUS}'
 
 # previous_publish:
 #   extends: .publish
@@ -110,7 +110,7 @@ current:
   variables:
     IMAGE_BASE: drupal:${DRUPAL_CURRENT}-php${DRUPAL_CURRENT_PHP}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
-    DIR: '${DRUPAL_CURRENT}'
+    BUILD_DIR: '${DRUPAL_CURRENT}'
 
 # current_publish:
 #   extends: .publish
@@ -123,7 +123,7 @@ current:
 #   variables:
 #     IMAGE_BASE: drupal:${DRUPAL_NEXT}-php${DRUPAL_NEXT_PHP}
 #     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-10.0
-#     DIR: '${DRUPAL_NEXT}'
+#     BUILD_DIR: '${DRUPAL_NEXT}'
 
 # next_publish:
 #   extends: .publish
@@ -136,7 +136,7 @@ current:
 #   variables:
 #     IMAGE_BASE: debian:bullseye-slim
 #     IMAGE: chrome-headless:${CI_COMMIT_BRANCH}
-#     DIR: chrome-headless
+#     BUILD_DIR: chrome-headless
 #     NO_TESTS: 1
 
 # chrome-headless_publish:
