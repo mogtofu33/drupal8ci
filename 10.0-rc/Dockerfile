@@ -1,5 +1,5 @@
-# https://github.com/docker-library/drupal/blob/master/9.3/php8.0/apache-buster/Dockerfile
-FROM drupal:9.3-php8.0
+# https://github.com/docker-library/drupal/blob/master/10.0-rc/php8.1/apache-buster/Dockerfile
+FROM drupal:10.0-rc-php8.1
 
 LABEL maintainer="dev-drupal.com"
 LABEL org.label-schema.schema-version="1.0"
@@ -78,7 +78,7 @@ USER root
 # @todo remove phpspec/prophecy-phpunit when Drupal 9 is deprecated.
 RUN COMPOSER_MEMORY_LIMIT=-1 \
     composer require -n --dev --working-dir="/opt/drupal" \
-    "drupal/core-dev:^9.3" "drush/drush:^11" "phpspec/prophecy-phpunit:^2" \
+    "drupal/core-dev:10.0.x-dev" "drush/drush:^11" "phpspec/prophecy-phpunit:^2" \
   && composer clear-cache
 
 #==================

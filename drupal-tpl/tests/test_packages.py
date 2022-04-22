@@ -6,12 +6,12 @@ import pytest
   ("curl"),
   ("git"),
   ("jq"),
-  ("gettext"),
-  ("openssh"),
+  ("gettext-base"),
+  ("ssh"),
   ("xsltproc"),
   ("mariadb-client"),
   ("postgresql-client"),
-  ("node"),
+  ("nodejs"),
   ("yarn"),
 ])
 def test_packages_installed(host, name):

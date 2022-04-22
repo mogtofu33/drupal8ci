@@ -2,6 +2,12 @@
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
 
 LABEL maintainer="dev-drupal.com"
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.name="gitlab-ci-drupal/drupal-ci-images"
+LABEL org.label-schema.description="Drupal CI images for project https://gitlab.com/mog33/gitlab-ci-drupal"
+LABEL org.label-schema.url="https://mog33.gitlab.io/gitlab-ci-drupal"
+LABEL org.label-schema.vcs-url="https://gitlab.com/gitlab-ci-drupal/drupal-ci-images"
+LABEL org.label-schema.vendor="dev-drupal.com"
 
 # Install needed programs.
 RUN apt-get update && apt-get install --no-install-recommends -y \

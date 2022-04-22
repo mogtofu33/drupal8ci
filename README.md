@@ -10,7 +10,6 @@ Used with project [Gitlab CI Drupal](https://gitlab.com/mog33/gitlab-ci-drupal).
 * Fork from [juampynr/drupal8ci](https://hub.docker.com/r/juampynr/drupal8ci/~/dockerfile/)
 * Based on [Drupal official image](https://github.com/docker-library/drupal), added
   * [Node.js](https://nodejs.org/en/) + [Yarn](https://yarnpkg.com)
-  * [Google chrome stable](https://dl.google.com/linux/chrome/deb/) + [Chromedriver](http://chromedriver.chromium.org)
   * [Robo CI](http://robo.li)
   * [Phpqa](https://github.com/EdgedesignCZ/phpqa) including:
     * [Phpmetrics](https://www.phpmetrics.org)
@@ -18,16 +17,17 @@ Used with project [Gitlab CI Drupal](https://gitlab.com/mog33/gitlab-ci-drupal).
     * [Phpcs](https://github.com/squizlabs/PHP_CodeSniffer)
     * [Phpmd](https://phpmd.org)
     * [Pdepend](https://pdepend.org)
-    * [Phpcpd](https://github.com/sebastianbergmann/phpcpd)
   * [Security checker](https://github.com/fabpot/local-php-security-checker)
   * [phpstan](https://github.com/phpstan/phpstan)
   * [phpstan-drupal](https://github.com/mglaman/phpstan-drupal)
   * [Drupal Coder](https://www.drupal.org/project/coder)
-  * Mariadb (MySQL) client (For Drush sql commands)
+  * Mariadb (MySQL) and PostgreSQL client
   * Php with extensions:
-    *  intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp imagick xdebug
+    * intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp imagick xdebug
   * [jq](https://stedolan.github.io/jq/)
   * [bc](https://www.gnu.org/software/bc/)
+  * [xsltproc](http://xmlsoft.org/xslt/xsltproc.html)
+  * [gettext](http://xmlsoft.org/xslt/xsltproc.html)
 
 ## Basic usage (local)
 
@@ -49,11 +49,11 @@ make prepare
 
 ## Tests
 
-Basic version check tests with [Obvious Shell Testing (osht)](https://github.com/coryb/osht).
+Tests with [infratest](https://testinfra.readthedocs.io/en/latest/).
 
 ```bash
-docker run -it --rm mogtofu33/drupal8ci:3.x-dev-9.3 /scripts/run-tests.sh
+docker run -it --rm mogtofu33/drupal8ci:4.x-dev-9.3 /tests/prepare-tests.sh && pytest
 ```
 
 ----
-Want some help implementing this on your project? I provide Drupal expertise as a freelance, just [contact me](https://developpeur-drupal.com/en).
+Want some help implementing this on your project? I provide Drupal expertise as a **freelance**, just [contact me](https://developpeur-drupal.com/en).

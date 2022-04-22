@@ -17,7 +17,7 @@ def test_composer(host):
 ])
 def test_composer_bin(host, bin):
   ''' Test bin exist '''
-  assert host.file("var/www/.composer/vendor/bin/" + bin).exists
+  assert host.file("/var/www/.composer/vendor/bin/" + bin).exists
   assert host.file("/usr/local/bin/" + bin).is_symlink
   assert host.file("/usr/local/bin/" + bin).mode == 0o777
 

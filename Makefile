@@ -24,8 +24,8 @@ define prepare
 endef
 
 prepare:
-#	$(call prepare,${DRUPAL_PREVIOUS},${DRUPAL_PREVIOUS_PHP},${DRUPAL_PREVIOUS_DEV})
+	$(call prepare,${DRUPAL_PREVIOUS},${DRUPAL_PREVIOUS_PHP},${DRUPAL_PREVIOUS_DEV})
 	$(call prepare,${DRUPAL_CURRENT},${DRUPAL_CURRENT_PHP},${DRUPAL_CURRENT_DEV})
-#	$(call prepare,${DRUPAL_NEXT},${DRUPAL_NEXT_PHP},${DRUPAL_NEXT_DEV})
+	$(call prepare,${DRUPAL_NEXT},${DRUPAL_NEXT_PHP},${DRUPAL_NEXT_DEV})
 
 .PHONY: prepare
