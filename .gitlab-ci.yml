@@ -42,6 +42,7 @@ variables:
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0K\e[1;34m Build $CI_REGISTRY_IMAGE/$IMAGE from $BUILD_DIR"
     - docker build
       --tag $CI_REGISTRY_IMAGE/$IMAGE
+      --tag $RELEASE_IMAGE/$IMAGE
       --compress
       --cache-from $CI_REGISTRY_IMAGE/$IMAGE
       --build-arg BUILDKIT_INLINE_CACHE=1
@@ -52,7 +53,6 @@ variables:
     - if [[ -d ./$BUILD_DIR/tests ]]; then ./.gitlab-ci/run-tests.sh $CI_REGISTRY_IMAGE/$IMAGE; fi;
     # Login to Docker hub and push.
     - echo "$RELEASE_PASSWORD" | docker login $RELEASE_REGISTRY --username $RELEASE_USER --password-stdin
-    - docker tag $CI_REGISTRY_IMAGE/$IMAGE $RELEASE_IMAGE/$IMAGE
     - docker push --quiet $RELEASE_IMAGE/$IMAGE
 
 prev-9-2:
@@ -69,7 +69,7 @@ cur-9-3:
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
     BUILD_DIR: '${DRUPAL_CURRENT}'
 
-next-10:
+drupal-10:
   extends: .build_test
   variables:
     IMAGE_BASE: drupal:${DRUPAL_NEXT}-php${DRUPAL_NEXT_PHP}
