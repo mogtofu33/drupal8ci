@@ -11,7 +11,7 @@ default:
     - docker pull --quiet $CI_REGISTRY_IMAGE/$IMAGE || true
   artifacts:
     reports:
-      junit: report.xml
+      junit: junit.xml
 
 stages:
   - build
