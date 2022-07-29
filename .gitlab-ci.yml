@@ -43,8 +43,6 @@ variables:
       --tag $CI_REGISTRY_IMAGE/$IMAGE
       --tag $RELEASE_IMAGE/$IMAGE
       --compress
-      --cache-from $CI_REGISTRY_IMAGE/$IMAGE
-      --build-arg BUILDKIT_INLINE_CACHE=$DOCKER_BUILDKIT
       $BUILD_DIR
     - docker images
     - docker push --quiet $CI_REGISTRY_IMAGE/$IMAGE
