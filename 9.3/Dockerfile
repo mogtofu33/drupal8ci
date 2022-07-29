@@ -1,7 +1,10 @@
 # https://github.com/docker-library/drupal/blob/master/9.3/php8.0/apache-buster/Dockerfile
 FROM drupal:9.3-php8.0
 
-LABEL maintainer="dev-drupal.com"
+LABEL name="drupal-ci-9.3" \
+LABEL maintainer="jean@dev-drupal.com"
+LABEL version="1.0"
+LABEL description="Drupal CI images for project https://gitlab.com/mog33/gitlab-ci-drupal"
 LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.name="gitlab-ci-drupal/drupal-ci-images"
 LABEL org.label-schema.description="Drupal CI images for project https://gitlab.com/mog33/gitlab-ci-drupal"

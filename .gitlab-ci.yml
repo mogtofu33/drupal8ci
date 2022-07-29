@@ -1,7 +1,7 @@
 default:
-  image: docker:20
+  image: docker:latest
   services:
-    - docker:20-dind
+    - docker:dind
   before_script:
     - docker --version
     # Pull base image from Docker hub.
@@ -39,15 +39,13 @@ variables:
 .build_test:
   stage: build
   script:
-    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0K\e[1;34m Build $CI_REGISTRY_IMAGE/$IMAGE from $BUILD_DIR"
     - docker build
       --tag $CI_REGISTRY_IMAGE/$IMAGE
       --tag $RELEASE_IMAGE/$IMAGE
       --compress
       --cache-from $CI_REGISTRY_IMAGE/$IMAGE
-      --build-arg BUILDKIT_INLINE_CACHE=1
+      --build-arg BUILDKIT_INLINE_CACHE=$DOCKER_BUILDKIT
       $BUILD_DIR
-    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
     - docker images
     - docker push --quiet $CI_REGISTRY_IMAGE/$IMAGE
     - if [[ -d ./$BUILD_DIR/tests ]]; then ./.gitlab-ci/run-tests.sh $CI_REGISTRY_IMAGE/$IMAGE; fi;
@@ -55,21 +53,21 @@ variables:
     - echo "$RELEASE_PASSWORD" | docker login $RELEASE_REGISTRY --username $RELEASE_USER --password-stdin
     - docker push --quiet $RELEASE_IMAGE/$IMAGE
 
-prev-9-2:
+previous:
   extends: .build_test
   variables:
     IMAGE_BASE: drupal:${DRUPAL_PREVIOUS}-php${DRUPAL_PREVIOUS_PHP}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_PREVIOUS}
     BUILD_DIR: '${DRUPAL_PREVIOUS}'
 
-cur-9-3:
+current:
   extends: .build_test
   variables:
     IMAGE_BASE: drupal:${DRUPAL_CURRENT}-php${DRUPAL_CURRENT_PHP}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
     BUILD_DIR: '${DRUPAL_CURRENT}'
 
-drupal-10:
+next:
   extends: .build_test
   variables:
     IMAGE_BASE: drupal:${DRUPAL_NEXT}-php${DRUPAL_NEXT_PHP}
