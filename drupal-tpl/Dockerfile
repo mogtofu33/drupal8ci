@@ -1,7 +1,7 @@
 # https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION/apache-buster/Dockerfile
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
 
-LABEL name="drupal-ci-${IMAGE_TAG}" \
+LABEL name="drupal-ci-${IMAGE_TAG}"
 LABEL maintainer="jean@dev-drupal.com"
 LABEL version="1.0"
 LABEL description="Drupal CI images for project https://gitlab.com/mog33/gitlab-ci-drupal"
