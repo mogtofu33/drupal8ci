@@ -2,7 +2,7 @@ import pytest
 
 def test_php_version(host):
   ''' Check PHP version so it's highlighted when changed '''
-  assert host.check_output('php -v').startswith('PHP 8.1')
+  assert host.check_output('php -v').startswith('PHP 8.0')
 
 @pytest.mark.parametrize("name", [
   ("sockets"),

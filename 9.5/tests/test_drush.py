@@ -6,4 +6,4 @@ def test_drush(host):
   assert host.file("/opt/drupal/vendor/bin/drush").mode == 0o755
   assert host.check_output("drush --version").startswith("Drush Commandline Tool")
   # Not working for Drupal 10 until the -rc tag suffix is removed.
-  # assert host.check_output("drush --root=/opt/drupal/web status --field=drupal-version").startswith("9.3")
+  # assert host.check_output("drush --root=/opt/drupal/web status --field=drupal-version").startswith("9.5")

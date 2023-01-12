@@ -18,13 +18,11 @@ stages:
 
 variables:
   # Drupal variables.
-  DRUPAL_PREVIOUS: '9.3'
+  DRUPAL_PREVIOUS: '9.4'
   DRUPAL_PREVIOUS_PHP: '8.0'
-  DRUPAL_CURRENT: '9.4'
+  DRUPAL_CURRENT: '9.5'
   DRUPAL_CURRENT_PHP: '8.1'
-  DRUPAL_NEXT: '10.0-rc'
-  # Specific Drupal 10 rc, remove when released.
-  DRUPAL_NEXT_IMAGE_TAG: '10.0'
+  DRUPAL_NEXT: '10.0'
   DRUPAL_NEXT_PHP: '8.1'
   # Docker variables.
   DOCKER_HOST: tcp://docker:2375
@@ -69,7 +67,7 @@ next:
   extends: .build_test
   variables:
     IMAGE_BASE: drupal:${DRUPAL_NEXT}-php${DRUPAL_NEXT_PHP}
-    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_NEXT_IMAGE_TAG}
+    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_NEXT}
     BUILD_DIR: '${DRUPAL_NEXT}'
 
 chrome-headless:

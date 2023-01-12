@@ -1,5 +1,5 @@
-# https://github.com/docker-library/drupal/blob/master/9.4/php8.1/apache-buster/Dockerfile
-FROM drupal:9.4-php8.1
+# https://github.com/docker-library/drupal/blob/master/9.4/php8.0/apache-buster/Dockerfile
+FROM drupal:9.4-php8.0
 
 LABEL name="drupal-ci-9.4"
 LABEL maintainer="jean@dev-drupal.com"

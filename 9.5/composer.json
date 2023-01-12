@@ -1,17 +1,17 @@
 {
     "name": "mog33/drupal8ci",
-    "description": "Packages for CI with Drupal 9.3 for https://gitlab.com/mog33/drupal8ci.",
+    "description": "Packages for CI with Drupal 9.5 for https://gitlab.com/mog33/drupal8ci.",
     "type": "project",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "edgedesign/phpqa": "^1.25",
+        "edgedesign/phpqa": "^1.26",
         "consolidation/robo": "^3",
         "drupal/coder": "^8.3",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
-        "phpstan/phpstan": "^1.4",
-        "phpstan/extension-installer": "^1.1",
-        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpstan/phpstan": "^1.9",
+        "phpstan/extension-installer": "^1.2",
+        "phpstan/phpstan-deprecation-rules": "^1.1",
         "mglaman/phpstan-drupal": "^1.1",
         "php-parallel-lint/php-parallel-lint": "^1.3"
     },
