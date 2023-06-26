@@ -3,9 +3,9 @@ FROM drupal:9.5-php8.1
 
 LABEL name="drupal-ci-9.5"
 LABEL maintainer="jean@dev-drupal.com"
-LABEL version="1.0"
+LABEL version="1.1"
 LABEL description="Drupal CI images for project https://gitlab.com/mog33/gitlab-ci-drupal"
-LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.schema-version="1.1"
 LABEL org.label-schema.name="gitlab-ci-drupal/drupal-ci-images"
 LABEL org.label-schema.description="Drupal CI images for project https://gitlab.com/mog33/gitlab-ci-drupal"
 LABEL org.label-schema.url="https://mog33.gitlab.io/gitlab-ci-drupal"
@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 #==================
 # Install Nodejs, Yarn.
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
   && curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
   && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
   && apt-get update && apt-get install --no-install-recommends -y \
@@ -111,6 +111,6 @@ RUN chmod 777 /var/www \
   && chown www-data:www-data /var/www/.bashrc
 
 #==================
-# Stay as root becasue it's a ci image.
+# Stay as root because it's a ci image.
 # For obvious security reason, this image is NOT meant to be used by any production system.
 # USER www-data
