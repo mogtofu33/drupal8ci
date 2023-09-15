@@ -2,19 +2,23 @@ import pytest
 
 def test_php_version(host):
   ''' Check PHP version so it's highlighted when changed '''
-  assert host.check_output('php -v').startswith('PHP 8.0')
+  assert host.check_output('php -v').startswith('PHP 8.2')
 
 @pytest.mark.parametrize("name", [
-  ("sockets"),
+  ("bcmath"),
+  ("calendar"),
+  ("exif"),
   ("ftp"),
   ("intl"),
-  ("xsl"),
   ("mysqli"),
+  ("OPcache"),
+  ("pcntl"),
   ("pdo_mysql"),
   ("pdo_pgsql"),
   ("pdo_sqlite"),
-  ("OPcache"),
+  ("sockets"),
   ("xdebug"),
+  ("xsl"),
 ])
 def test_php_modules(host, name):
   ''' Test the minimum list of needed extensions '''
