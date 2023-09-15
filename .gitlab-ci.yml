@@ -18,12 +18,12 @@ stages:
 
 variables:
   # Drupal variables.
-  DRUPAL_PREVIOUS: '9.4'
-  DRUPAL_PREVIOUS_PHP: '8.0'
-  DRUPAL_CURRENT: '9.5'
+  DRUPAL_PREVIOUS: '9.5'
+  DRUPAL_PREVIOUS_PHP: '8.1'
+  DRUPAL_CURRENT: '10.0'
   DRUPAL_CURRENT_PHP: '8.1'
-  DRUPAL_NEXT: '10.0'
-  DRUPAL_NEXT_PHP: '8.1'
+  DRUPAL_NEXT: '10.1'
+  DRUPAL_NEXT_PHP: '8.2'
   # Docker variables.
   DOCKER_HOST: tcp://docker:2375
   RELEASE_REGISTRY: docker.io
