@@ -1,7 +1,7 @@
-# https://github.com/docker-library/drupal/blob/master/10.0/php8.2/apache-buster/Dockerfile
-FROM drupal:10.0-php8.2
+# https://github.com/docker-library/drupal/blob/master/10.2/php8.2/apache-buster/Dockerfile
+FROM drupal:10.2-php8.2
 
-LABEL name="drupal-ci-10.0"
+LABEL name="drupal-ci-10.2"
 LABEL maintainer="jean@dev-drupal.com"
 LABEL version="1.1"
 LABEL description="Drupal CI images for project https://gitlab.com/mog33/gitlab-ci-drupal"
@@ -90,7 +90,7 @@ USER root
 # @todo remove phpspec/prophecy-phpunit when Drupal 9 is deprecated.
 RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
     composer require -n --dev --working-dir="/opt/drupal" \
-    "drupal/core-dev:^10.0" "drush/drush:^11" "phpspec/prophecy-phpunit:^2" ; \
+    "drupal/core-dev:^10.2" "drush/drush:^11" "phpspec/prophecy-phpunit:^2" ; \
   composer clear-cache
 
 #==================
