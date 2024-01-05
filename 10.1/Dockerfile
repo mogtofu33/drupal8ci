@@ -90,7 +90,7 @@ USER root
 # @todo remove phpspec/prophecy-phpunit when Drupal 9 is deprecated.
 RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
     composer require -n --dev --working-dir="/opt/drupal" \
-    "drupal/core-dev:^10.1" "drush/drush:^11" "phpspec/prophecy-phpunit:^2" ; \
+    "drupal/core-dev:^10.1" "drush/drush" "phpspec/prophecy-phpunit:^2" ; \
   composer clear-cache
 
 #==================
