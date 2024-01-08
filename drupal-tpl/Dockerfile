@@ -60,7 +60,8 @@ RUN set -uex; \
     libxslt-dev ; \
   # https://github.com/mlocati/docker-php-extension-installer
   docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp ; \
-  pecl channel-update pecl.php.net && pecl install imagick xdebug ; \
+  # Pin xdebug for db error, @see https://www.drupal.org/project/drupal/issues/3405976#comment-15346751
+  pecl channel-update pecl.php.net && pecl install imagick xdebug-3.2.2 ; \
   docker-php-ext-enable imagick xdebug ; \
   # Cleanup.
   docker-php-source delete ; \
