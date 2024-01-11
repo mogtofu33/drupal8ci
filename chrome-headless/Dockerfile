@@ -5,7 +5,7 @@ LABEL name="chrome-headless" \
 	version="1.0" \
 	description="Google Chrome Headless for CI usage"
 
-ENV CHROME_OPTS="--headless --no-sandbox --window-size=1920,1080 --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222"
+ENV CHROME_OPTS="--headless --no-sandbox --window-size=1600,800 --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222"
 
 RUN apt-get update && apt-get install -y \
 	apt-transport-https \

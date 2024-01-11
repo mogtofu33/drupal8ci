@@ -1,3 +1,17 @@
+variables:
+  IMAGE_VERSION: '1.3'
+  NODE_VERSION: '18'
+  BUILD_DIR: './drupal'
+  # Docker variables.
+  DOCKER_HOST: tcp://docker:2375
+  RELEASE_REGISTRY: docker.io
+  RELEASE_IMAGE: index.docker.io/$RELEASE_USER
+  # Enable buildkit to use '--from-cache' when 'docker build'.
+  DOCKER_BUILDKIT: 1
+  DO_RELEASE:
+    value: "1"
+    description: Publish the image to docker, set 0 to not publish.
+
 default:
   image: docker:latest
   services:
@@ -16,30 +30,16 @@ default:
 stages:
   - build
 
-variables:
-  # Drupal variables.
-  DRUPAL_PREVIOUS: '9.5'
-  DRUPAL_PREVIOUS_PHP: '8.1'
-  DRUPAL_CURRENT: '10.1'
-  DRUPAL_CURRENT_PHP: '8.1'
-  DRUPAL_NEXT: '10.2'
-  DRUPAL_NEXT_PHP: '8.2'
-  # Docker variables.
-  DOCKER_HOST: tcp://docker:2375
-  RELEASE_REGISTRY: docker.io
-  RELEASE_IMAGE: index.docker.io/$RELEASE_USER
-  # Enable buildkit to use '--from-cache' when 'docker build'.
-  DOCKER_BUILDKIT: 1
-  DO_RELEASE:
-    value: "1"
-    description: Publish the image to docker, set 0 to not publish.
-
 .build_test:
   stage: build
   script:
     - docker build
       --tag $CI_REGISTRY_IMAGE/$IMAGE
       --tag $RELEASE_IMAGE/$IMAGE
+      --build-arg IMAGE_TAG=$IMAGE_TAG
+      --build-arg PHP_VERSION=$PHP_VERSION
+      --build-arg IMAGE_VERSION=$IMAGE_VERSION
+      --build-arg NODE_VERSION=$NODE_VERSION
       --compress
       $BUILD_DIR
     - docker images
@@ -49,28 +49,32 @@ variables:
     - echo "$RELEASE_PASSWORD" | docker login $RELEASE_REGISTRY --username $RELEASE_USER --password-stdin
     - docker push --quiet $RELEASE_IMAGE/$IMAGE
 
-previous:
+.previous:
   extends: .build_test
   variables:
-    IMAGE_BASE: drupal:${DRUPAL_PREVIOUS}-php${DRUPAL_PREVIOUS_PHP}
-    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_PREVIOUS}
-    BUILD_DIR: '${DRUPAL_PREVIOUS}'
+    IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
+    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
+    IMAGE_TAG: '10.1'
+    PHP_VERSION: '8.1'
+
 
 current:
   extends: .build_test
   variables:
-    IMAGE_BASE: drupal:${DRUPAL_CURRENT}-php${DRUPAL_CURRENT_PHP}
-    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_CURRENT}
-    BUILD_DIR: '${DRUPAL_CURRENT}'
+    IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
+    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
+    IMAGE_TAG: '10.2'
+    PHP_VERSION: '8.2'
 
-next:
+.next:
   extends: .build_test
   variables:
-    IMAGE_BASE: drupal:${DRUPAL_NEXT}-php${DRUPAL_NEXT_PHP}
-    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${DRUPAL_NEXT}
-    BUILD_DIR: '${DRUPAL_NEXT}'
+    IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
+    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
+    IMAGE_TAG: '11'
+    PHP_VERSION: '8.3'
 
-chrome-headless:
+.chrome-headless:
   extends: .build_test
   variables:
     IMAGE_BASE: debian:bullseye-slim

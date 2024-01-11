@@ -1,8 +1,8 @@
-# Drupal 9/10 CI Docker image for Gitlab CI
+# Drupal 10 CI Docker image for Gitlab CI
 
 ## Details
 
-[Drupal 9/10](https://www.drupal.org) ci image based on official [docker Drupal](https://github.com/docker-library/drupal)
+[Drupal 10](https://www.drupal.org) ci image based on official [docker Drupal](https://github.com/docker-library/drupal)
 with some Php/NodeJs tools needed for CI or Local Build/Test/Lint.
 
 Used with project [Gitlab CI Drupal](https://gitlab.com/mog33/gitlab-ci-drupal).
@@ -17,7 +17,6 @@ Used with project [Gitlab CI Drupal](https://gitlab.com/mog33/gitlab-ci-drupal).
     * [Phpcs](https://github.com/squizlabs/PHP_CodeSniffer)
     * [Phpmd](https://phpmd.org)
     * [Pdepend](https://pdepend.org)
-  * [Security checker](https://github.com/fabpot/local-php-security-checker)
   * [phpstan](https://github.com/phpstan/phpstan)
   * [phpstan-drupal](https://github.com/mglaman/phpstan-drupal)
   * [Drupal Coder](https://www.drupal.org/project/coder)
@@ -33,7 +32,7 @@ Used with project [Gitlab CI Drupal](https://gitlab.com/mog33/gitlab-ci-drupal).
 
 All images are based on official [docker Drupal](https://github.com/docker-library) images managed by Composer.
 
-To use with a local Drupal 9/10 managed by Composer, mount your Drupal on `/opt/drupal/`
+To use with a local Drupal 10 managed by Composer, mount your Drupal on `/opt/drupal/`
 
 ## Issues
 
@@ -43,16 +42,12 @@ To use with a local Drupal 9/10 managed by Composer, mount your Drupal on `/opt/
 
 CI variable `CI_DO_RELEASE`, default to `1` to push to Docker hub.
 
-```bash
-make prepare
-```
-
 ## Tests
 
 Tests with [infratest](https://testinfra.readthedocs.io/en/latest/).
 
 ```bash
-docker run -it --rm mogtofu33/drupal8ci:4.x-dev-9.3 /tests/prepare-tests.sh && pytest
+docker run -it --rm mogtofu33/drupal8ci:4.x-dev-10.2 /tests/prepare-tests.sh && pytest
 ```
 
 ----

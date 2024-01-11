@@ -1,11 +1,16 @@
+ARG IMAGE_TAG=10.2
+ARG PHP_VERSION=8.2
+ARG NODE_VERSION=18
+ARG IMAGE_VERSION=1.3
+
 # https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION/apache-buster/Dockerfile
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
 
 LABEL name="drupal-ci-${IMAGE_TAG}"
 LABEL maintainer="jean@dev-drupal.com"
-LABEL version="1.1"
+LABEL version="${IMAGE_VERSION}"
 LABEL description="Drupal CI images for project https://gitlab.com/mog33/gitlab-ci-drupal"
-LABEL org.label-schema.schema-version="1.2"
+LABEL org.label-schema.schema-version="${IMAGE_VERSION}"
 LABEL org.label-schema.name="gitlab-ci-drupal/drupal-ci-images"
 LABEL org.label-schema.description="Drupal CI images for project https://gitlab.com/mog33/gitlab-ci-drupal"
 LABEL org.label-schema.url="https://mog33.gitlab.io/gitlab-ci-drupal"
@@ -35,11 +40,14 @@ RUN apt-get update ; \
 #==================
 # Install Nodejs, Yarn.
 # https://github.com/nodesource/distributions#installation-instructions
+# @todo replace with https://github.com/Schniz/fnm?
+# @todo install yarn > ? https://yarnpkg.com/getting-started/install
+# @see https://wiki.debian.org/Yarn
 RUN set -uex; \
   mkdir -p /etc/apt/keyrings; \
   curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
     | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg; \
-  echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" \
+  echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_VERSION}.x nodistro main" \
     > /etc/apt/sources.list.d/nodesource.list; \
   # Install Yarn.
   curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - ; \
@@ -91,7 +99,7 @@ USER root
 # @todo remove phpspec/prophecy-phpunit when Drupal 9 is deprecated.
 RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
     composer require -n --dev --working-dir="/opt/drupal" \
-    "drupal/core-dev:${CORE_DEV}" "drush/drush" "phpspec/prophecy-phpunit:^2" ; \
+    "drupal/core-dev:^${IMAGE_TAG}" "drush/drush" "phpspec/prophecy-phpunit:^2" ; \
   composer clear-cache
 
 #==================
