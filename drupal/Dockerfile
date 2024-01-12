@@ -1,10 +1,15 @@
-ARG IMAGE_TAG=10.2
-ARG PHP_VERSION=8.2
-ARG NODE_VERSION=18
-ARG IMAGE_VERSION=1.3
+ARG IMAGE_TAG='10.2'
+ARG PHP_VERSION='8.2'
 
 # https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION/apache-buster/Dockerfile
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
+
+ARG IMAGE_VERSION='1.3'
+ARG NODE_VERSION='18'
+
+SHELL [ "bash", "-c" ]
+
+COPY bash.bashrc /etc/bash.bashrc
 
 LABEL name="drupal-ci-${IMAGE_TAG}"
 LABEL maintainer="jean@dev-drupal.com"
@@ -17,8 +22,9 @@ LABEL org.label-schema.url="https://mog33.gitlab.io/gitlab-ci-drupal"
 LABEL org.label-schema.vcs-url="https://gitlab.com/gitlab-ci-drupal/drupal-ci-images"
 LABEL org.label-schema.vendor="dev-drupal.com"
 
-# Install needed programs.
-RUN apt-get update ; \
+# Install fnm and initiate it
+RUN \
+  apt-get update ; \
   apt-get install --no-install-recommends -y \
     apt-transport-https \
     bc \
@@ -33,29 +39,7 @@ RUN apt-get update ; \
     sudo \
     unzip \
     vim \
-    xsltproc ; \
-  apt-get clean ; \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ;
-
-#==================
-# Install Nodejs, Yarn.
-# https://github.com/nodesource/distributions#installation-instructions
-# @todo replace with https://github.com/Schniz/fnm?
-# @todo install yarn > ? https://yarnpkg.com/getting-started/install
-# @see https://wiki.debian.org/Yarn
-RUN set -uex; \
-  mkdir -p /etc/apt/keyrings; \
-  curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
-    | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg; \
-  echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_VERSION}.x nodistro main" \
-    > /etc/apt/sources.list.d/nodesource.list; \
-  # Install Yarn.
-  curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - ; \
-  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list ; \
-  apt-get update ; \
-  apt-get install --no-install-recommends -y \
-    nodejs \
-    yarn \
+    xsltproc \
     # Required for Drush sql commands.
     mariadb-client \
     postgresql-client \
@@ -66,6 +50,26 @@ RUN set -uex; \
     libnss3-dev \
     libssl-dev \
     libxslt-dev ; \
+  #==================
+  # Install Nodejs with fnm, Yarn.
+  # @see https://github.com/Schniz/fnm
+  curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "/opt/fnm" --skip-shell ; \
+  ln -s /opt/fnm/fnm /usr/bin/ && chmod +x /usr/bin/fnm ; \
+  # Install node version as default
+  /bin/bash -c "source /etc/bash.bashrc && fnm install ${NODE_VERSION}" ; \
+  /bin/bash -c "source /etc/bash.bashrc && fnm alias default ${NODE_VERSION}" ; \
+  echo "eval '$(fnm env --shell bash)'" >> .bashrc ; \
+  # Add fnm for bash
+  /bin/bash -c "source /etc/bash.bashrc && fnm use default" ; \
+  /bin/bash -c 'source /etc/bash.bashrc && /bin/ln -s "/opt/fnm/aliases/default/bin/node" /usr/bin/node' ; \
+  /bin/bash -c 'source /etc/bash.bashrc && /bin/ln -s "/opt/fnm/aliases/default/bin/npm" /usr/bin/npm' ; \
+  /bin/bash -c 'source /etc/bash.bashrc && /bin/ln -s "/opt/fnm/aliases/default/bin/npx" /usr/bin/npx' ; \
+  curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - ; \
+  echo "deb [trusted=yes] https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list ; \
+  apt-get update && apt-get install -y --no-install-recommends yarn ; \
+  echo -e ' ' >> /etc/bash.bashrc ; \
+  echo -e 'export PATH="$PATH:$(yarn global bin)"' >> /etc/bash.bashrc ; \
+  # yarn global add pnpm ; \
   # https://github.com/mlocati/docker-php-extension-installer
   docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp ; \
   # Pin xdebug for db error, @see https://www.drupal.org/project/drupal/issues/3405976#comment-15346751
@@ -73,8 +77,11 @@ RUN set -uex; \
   docker-php-ext-enable imagick xdebug ; \
   # Cleanup.
   docker-php-source delete ; \
+  apt-get autoremove -y ; \
   apt-get clean ; \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ;
+  rm -rf /var/lib/apt/lists/* ; \
+  # clean up tmp
+  rm -rf /tmp/*
 
 #==================
 # Install composer third party.
@@ -120,13 +127,7 @@ RUN chmod 777 /var/www ; \
   mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini ; \
   sed -i "s#memory_limit = 128M#memory_limit = 4G#g" /usr/local/etc/php/php.ini ; \
   sed -i "s#max_execution_time = 30#max_execution_time = 90#g" /usr/local/etc/php/php.ini ; \
-  sed -i "s#;max_input_nesting_level = 64#max_input_nesting_level = 512#g" /usr/local/etc/php/php.ini ; \
-  # Convenient alias for root and www-data.
-  echo "alias ls='ls --color=auto -lAh'" >> /root/.bashrc ; \
-  echo "alias l='ls --color=auto -lAh'" >> /root/.bashrc ; \
-  echo "alias dr='drush --root=/opt/drupal/web'" >> /root/.bashrc ; \
-  cp /root/.bashrc /var/www/.bashrc ; \
-  chown www-data:www-data /var/www/.bashrc ;
+  sed -i "s#;max_input_nesting_level = 64#max_input_nesting_level = 512#g" /usr/local/etc/php/php.ini
 
 #==================
 # Stay as root because it's a ci image.
