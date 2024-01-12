@@ -57,7 +57,6 @@ stages:
     IMAGE_TAG: '10.1'
     PHP_VERSION: '8.1'
 
-
 current:
   extends: .build_test
   variables:

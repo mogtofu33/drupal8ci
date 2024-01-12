@@ -4,6 +4,8 @@ ARG PHP_VERSION='8.2'
 # https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION/apache-buster/Dockerfile
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
 
+ARG IMAGE_TAG='10.2'
+ARG PHP_VERSION='8.2'
 ARG IMAGE_VERSION='1.3'
 ARG NODE_VERSION='18'
 
@@ -58,7 +60,6 @@ RUN \
   # Install node version as default
   /bin/bash -c "source /etc/bash.bashrc && fnm install ${NODE_VERSION}" ; \
   /bin/bash -c "source /etc/bash.bashrc && fnm alias default ${NODE_VERSION}" ; \
-  echo "eval '$(fnm env --shell bash)'" >> .bashrc ; \
   # Add fnm for bash
   /bin/bash -c "source /etc/bash.bashrc && fnm use default" ; \
   /bin/bash -c 'source /etc/bash.bashrc && /bin/ln -s "/opt/fnm/aliases/default/bin/node" /usr/bin/node' ; \
@@ -69,7 +70,6 @@ RUN \
   apt-get update && apt-get install -y --no-install-recommends yarn ; \
   echo -e ' ' >> /etc/bash.bashrc ; \
   echo -e 'export PATH="$PATH:$(yarn global bin)"' >> /etc/bash.bashrc ; \
-  # yarn global add pnpm ; \
   # https://github.com/mlocati/docker-php-extension-installer
   docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp ; \
   # Pin xdebug for db error, @see https://www.drupal.org/project/drupal/issues/3405976#comment-15346751
@@ -105,7 +105,7 @@ USER root
 # Install Drupal core:dev, Drush for a module.
 # @todo remove phpspec/prophecy-phpunit when Drupal 9 is deprecated.
 RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
-    composer require -n --dev --working-dir="/opt/drupal" \
+  composer require -n --dev --working-dir="/opt/drupal" \
     "drupal/core-dev:^${IMAGE_TAG}" "drush/drush" "phpspec/prophecy-phpunit:^2" ; \
   composer clear-cache
 
@@ -127,7 +127,12 @@ RUN chmod 777 /var/www ; \
   mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini ; \
   sed -i "s#memory_limit = 128M#memory_limit = 4G#g" /usr/local/etc/php/php.ini ; \
   sed -i "s#max_execution_time = 30#max_execution_time = 90#g" /usr/local/etc/php/php.ini ; \
-  sed -i "s#;max_input_nesting_level = 64#max_input_nesting_level = 512#g" /usr/local/etc/php/php.ini
+  sed -i "s#;max_input_nesting_level = 64#max_input_nesting_level = 512#g" /usr/local/etc/php/php.ini ; \
+    # Set bash for root and www-data
+  rm -f /root/.bashrc ; \
+  ln -s /etc/bash.bashrc /root/.bashrc ; \
+  ln -s /etc/bash.bashrc /var/www/.bashrc ; \
+  chown www-data:www-data /var/www/.bashrc ;
 
 #==================
 # Stay as root because it's a ci image.
