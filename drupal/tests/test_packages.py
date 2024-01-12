@@ -23,4 +23,4 @@ def test_node(host):
   assert host.check_output('fnm -V').startswith('fnm')
 
 def test_node(host):
-  assert host.check_output('node -v').startswith('v18')
+  assert host.check_output('fnm current').startswith('v18')

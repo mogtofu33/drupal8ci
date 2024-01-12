@@ -23,7 +23,7 @@ if ! docker exec "${_cid}" /tests/prepare-tests.sh; then
 fi
 
 # Run tests and produce a junit report.
-docker exec -w /tests "${_cid}" pytest-3 --junit-xml junit.xml
+docker exec -w /tests "${_cid}" bash -c "pytest-3 --junit-xml junit.xml"
 
 # Report is created inside the image we need to get it.
 docker cp "${_cid}":/tests/junit.xml junit.xml
