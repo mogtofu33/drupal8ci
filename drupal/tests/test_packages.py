@@ -20,7 +20,7 @@ def test_packages_installed(host, name):
   assert pkg.is_installed
 
 def test_node(host):
-  assert host.check_output('fnm -V').startswith('fnm')
+  assert host.check_output('bash -c "fnm -V"').startswith('fnm')
 
 def test_node(host):
-  assert host.check_output('fnm current').startswith('v18')
+  assert host.check_output('bash -c "fnm current"').startswith('v18')
