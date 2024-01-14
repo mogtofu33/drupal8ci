@@ -77,11 +77,8 @@ RUN \
   docker-php-ext-enable imagick xdebug ; \
   # Cleanup.
   docker-php-source delete ; \
-  apt-get autoremove -y ; \
   apt-get clean ; \
-  rm -rf /var/lib/apt/lists/* ; \
-  # clean up tmp
-  rm -rf /tmp/*
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #==================
 # Install composer third party.
