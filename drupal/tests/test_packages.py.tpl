@@ -19,5 +19,5 @@ def test_packages_installed(host, name):
   pkg = host.package(name)
   assert pkg.is_installed
 
-# def test_node(host):
-  # assert host.check_output('node -v').startswith('v18')
+def test_node(host):
+  assert host.check_output('node -v').startswith('v$NODE_VERSION')

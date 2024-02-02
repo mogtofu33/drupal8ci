@@ -98,10 +98,9 @@ USER root
 
 #==================
 # Install Drupal core:dev, Drush for a module.
-# @todo remove phpspec/prophecy-phpunit when Drupal 9 is deprecated.
 RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
     composer require -n --dev --working-dir="/opt/drupal" \
-    "drupal/core-dev:^${IMAGE_TAG}" "drush/drush" "phpspec/prophecy-phpunit:^2" ; \
+    "drupal/core-dev:^${IMAGE_TAG}" "drush/drush" ; \
   composer clear-cache
 
 #==================

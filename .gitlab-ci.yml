@@ -34,12 +34,15 @@ stages:
   stage: build
   script:
     - echo "Build $IMAGE_VERSION with Drupal:$IMAGE_TAG PHP:$PHP_VERSION Node:$NODE_VERSION"
+    - PHP_VERSION="$PHP_VERSION" envsubst < "./drupal/tests/test_php.py" > "./drupal/tests/test_php.py"
+    - NODE_VERSION="$NODE_VERSION" envsubst < "./drupal/tests/test_packages.py" > "./drupal/tests/test_packages.py"
+    - DRUPAL_VERSION="$IMAGE_TAG" envsubst < "./drupal/tests/test_drush.py" > "./drupal/tests/test_drush.py"
     - docker build
       --tag $CI_REGISTRY_IMAGE/$IMAGE
       --tag $RELEASE_IMAGE/$IMAGE
+      --build-arg IMAGE_VERSION=$IMAGE_VERSION
       --build-arg IMAGE_TAG=$IMAGE_TAG
       --build-arg PHP_VERSION=$PHP_VERSION
-      --build-arg IMAGE_VERSION=$IMAGE_VERSION
       --build-arg NODE_VERSION=$NODE_VERSION
       --compress
       $BUILD_DIR
@@ -82,3 +85,4 @@ chrome-headless:
     BUILD_DIR: chrome-headless
     IMAGE_TAG: ''
     PHP_VERSION: ''
+    NODE_VERSION: ''

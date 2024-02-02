@@ -1,9 +1,41 @@
+IMAGE_VERSION=1.3
+NODE_VERSION=18
+
+# Must match with .gitlab-ci.yml
+DRUPAL_PREVIOUS=10.1
+DRUPAL_PREVIOUS_PHP=8.1
+DRUPAL_CURRENT=10.2
+DRUPAL_CURRENT_PHP=8.2
+DRUPAL_NEXT=11
+DRUPAL_NEXT_PHP=8.2
+
+define build
+	@echo "Build $(1) with Drupal:$(2) PHP:$(3) Node:$(4)..."
+	PHP_VERSION="$(3)" envsubst < "./drupal/tests/test_php.py.tpl" > "./drupal/tests/test_php.py" ;
+	NODE_VERSION="$(4)" envsubst < "./drupal/tests/test_packages.py.tpl" > "./drupal/tests/test_packages.py" ;
+	DRUPAL_VERSION="$(2)" envsubst < "./drupal/tests/test_drush.py.tpl" > "./drupal/tests/test_drush.py" ;
+	docker build \
+		--tag test-drupal-ci:$(2) \
+		--build-arg IMAGE_VERSION=$(1) \
+		--build-arg IMAGE_TAG=$(2) \
+		--build-arg PHP_VERSION=$(3) \
+		--build-arg NODE_VERSION=$(4) \
+		./drupal ;
+endef
+
+define test
+	@echo "Run tests for $(1)..."
+	@docker run -d --name test-ci-$(1) test-drupal-ci:$(1)
+	@docker exec test-ci-$(1) /tests/prepare-tests.sh
+	@docker exec -w /tests test-ci-$(1) pytest-3
+endef
+
 build:
-	@docker build --progress=plain --tag test-drupal-ci ./drupal
-	@# docker build --progress=plain --tag test-drupal-ci --build-arg IMAGE_TAG='10.2' ./drupal
-	@docker run -it --rm test-drupal-ci bash
+	$(call build,${IMAGE_VERSION},${DRUPAL_PREVIOUS},${DRUPAL_PREVIOUS_PHP},${NODE_VERSION})
+	$(call build,${IMAGE_VERSION},${DRUPAL_CURRENT},${DRUPAL_CURRENT_PHP},${NODE_VERSION})
+# $(call build,${IMAGE_VERSION},${DRUPAL_NEXT},${DRUPAL_NEXT_PHP},${NODE_VERSION})
 
 test:
-	@docker run -d --name test-ci test-drupal-ci
-	@docker exec test-ci /tests/prepare-tests.sh
-	docker exec -w /tests test-ci pytest-3
+	$(call test,${DRUPAL_PREVIOUS})
+	$(call test,${DRUPAL_CURRENT})
+# $(call test,${DRUPAL_NEXT})

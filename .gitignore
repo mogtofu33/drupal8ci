@@ -1,3 +1,6 @@
 /tmp
 composer.lock
 vendor
+drupal/tests/test_drush.py
+drupal/tests/test_packages.py
+drupal/tests/test_php.py
