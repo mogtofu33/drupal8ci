@@ -1,17 +1,13 @@
-ARG IMAGE_TAG='10.2'
-ARG PHP_VERSION='8.2'
+ARG IMAGE_TAG=10.2
+ARG PHP_VERSION=8.2
 
 # https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION/apache-buster/Dockerfile
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
 
-ARG IMAGE_TAG='10.2'
-ARG PHP_VERSION='8.2'
-ARG IMAGE_VERSION='1.3'
-ARG NODE_VERSION='18'
-
-SHELL [ "bash", "-c" ]
-
-COPY bash.bashrc /etc/bash.bashrc
+ARG IMAGE_TAG=10.2
+ARG PHP_VERSION=8.2
+ARG NODE_VERSION=18
+ARG IMAGE_VERSION=1.3
 
 LABEL name="drupal-ci-${IMAGE_TAG}"
 LABEL maintainer="jean@dev-drupal.com"
@@ -41,7 +37,27 @@ RUN \
     sudo \
     unzip \
     vim \
-    xsltproc \
+    xsltproc ; \
+  apt-get clean ; \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ;
+
+#==================
+# Install Nodejs, Yarn.
+# https://github.com/nodesource/distributions#installation-instructions
+# @todo replace with nvm?
+RUN set -uex; \
+  mkdir -p /etc/apt/keyrings; \
+  curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+    | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg; \
+  echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_VERSION}.x nodistro main" \
+    > /etc/apt/sources.list.d/nodesource.list; \
+  # Install Yarn.
+  curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - ; \
+  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list ; \
+  apt-get update ; \
+  apt-get install --no-install-recommends -y \
+    nodejs \
+    yarn \
     # Required for Drush sql commands.
     mariadb-client \
     postgresql-client \
