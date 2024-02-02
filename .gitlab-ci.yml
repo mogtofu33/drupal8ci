@@ -33,6 +33,7 @@ stages:
 .build_test:
   stage: build
   script:
+    - echo "Build $IMAGE_VERSION with Drupal:$IMAGE_TAG PHP:$PHP_VERSION Node:$NODE_VERSION"
     - docker build
       --tag $CI_REGISTRY_IMAGE/$IMAGE
       --tag $RELEASE_IMAGE/$IMAGE
@@ -57,7 +58,6 @@ previous:
     IMAGE_TAG: '10.1'
     PHP_VERSION: '8.1'
 
-
 current:
   extends: .build_test
   variables:
@@ -80,3 +80,5 @@ chrome-headless:
     IMAGE_BASE: debian:bullseye-slim
     IMAGE: chrome-headless:${CI_COMMIT_BRANCH}
     BUILD_DIR: chrome-headless
+    IMAGE_TAG: ''
+    PHP_VERSION: ''
