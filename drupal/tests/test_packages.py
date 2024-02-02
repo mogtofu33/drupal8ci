@@ -11,7 +11,7 @@ import pytest
   ("xsltproc"),
   ("mariadb-client"),
   ("postgresql-client"),
-  # ("node"), # Installed with fnm
+  ("nodejs"),
   ("yarn"),
 ])
 def test_packages_installed(host, name):
@@ -20,7 +20,4 @@ def test_packages_installed(host, name):
   assert pkg.is_installed
 
 # def test_node(host):
-#   assert host.check_output('bash -c "fnm -V"').startswith('fnm')
-
-# def test_node(host):
-#   assert host.check_output('bash -c "fnm current"').startswith('v18')
+  # assert host.check_output('node -v').startswith('v18')
