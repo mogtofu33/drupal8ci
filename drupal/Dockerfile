@@ -20,7 +20,7 @@ LABEL org.label-schema.url="https://mog33.gitlab.io/gitlab-ci-drupal"
 LABEL org.label-schema.vcs-url="https://gitlab.com/gitlab-ci-drupal/drupal-ci-images"
 LABEL org.label-schema.vendor="dev-drupal.com"
 
-# Install fnm and initiate it
+# Install needed programs.
 RUN \
   apt-get update ; \
   apt-get install --no-install-recommends -y \
@@ -68,24 +68,6 @@ RUN set -uex; \
     libnss3-dev \
     libssl-dev \
     libxslt-dev ; \
-  #==================
-  # Install Nodejs with fnm, Yarn.
-  # @see https://github.com/Schniz/fnm
-  curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "/opt/fnm" --skip-shell ; \
-  ln -s /opt/fnm/fnm /usr/bin/ && chmod +x /usr/bin/fnm ; \
-  # Install node version as default
-  /bin/bash -c "source /etc/bash.bashrc && fnm install ${NODE_VERSION}" ; \
-  /bin/bash -c "source /etc/bash.bashrc && fnm alias default ${NODE_VERSION}" ; \
-  # Add fnm for bash
-  /bin/bash -c "source /etc/bash.bashrc && fnm use default" ; \
-  /bin/bash -c 'source /etc/bash.bashrc && /bin/ln -s "/opt/fnm/aliases/default/bin/node" /usr/bin/node' ; \
-  /bin/bash -c 'source /etc/bash.bashrc && /bin/ln -s "/opt/fnm/aliases/default/bin/npm" /usr/bin/npm' ; \
-  /bin/bash -c 'source /etc/bash.bashrc && /bin/ln -s "/opt/fnm/aliases/default/bin/npx" /usr/bin/npx' ; \
-  curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - ; \
-  echo "deb [trusted=yes] https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list ; \
-  apt-get update && apt-get install -y --no-install-recommends yarn ; \
-  echo -e ' ' >> /etc/bash.bashrc ; \
-  echo -e 'export PATH="$PATH:$(yarn global bin)"' >> /etc/bash.bashrc ; \
   # https://github.com/mlocati/docker-php-extension-installer
   docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp ; \
   # Pin xdebug for db error, @see https://www.drupal.org/project/drupal/issues/3405976#comment-15346751
@@ -118,7 +100,7 @@ USER root
 # Install Drupal core:dev, Drush for a module.
 # @todo remove phpspec/prophecy-phpunit when Drupal 9 is deprecated.
 RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
-  composer require -n --dev --working-dir="/opt/drupal" \
+    composer require -n --dev --working-dir="/opt/drupal" \
     "drupal/core-dev:^${IMAGE_TAG}" "drush/drush" "phpspec/prophecy-phpunit:^2" ; \
   composer clear-cache
 
@@ -141,10 +123,11 @@ RUN chmod 777 /var/www ; \
   sed -i "s#memory_limit = 128M#memory_limit = 4G#g" /usr/local/etc/php/php.ini ; \
   sed -i "s#max_execution_time = 30#max_execution_time = 90#g" /usr/local/etc/php/php.ini ; \
   sed -i "s#;max_input_nesting_level = 64#max_input_nesting_level = 512#g" /usr/local/etc/php/php.ini ; \
-    # Set bash for root and www-data
-  rm -f /root/.bashrc ; \
-  ln -s /etc/bash.bashrc /root/.bashrc ; \
-  ln -s /etc/bash.bashrc /var/www/.bashrc ; \
+  # Convenient alias for root and www-data.
+  echo "alias ls='ls --color=auto -lAh'" >> /root/.bashrc ; \
+  echo "alias l='ls --color=auto -lAh'" >> /root/.bashrc ; \
+  echo "alias dr='drush --root=/opt/drupal/web'" >> /root/.bashrc ; \
+  cp /root/.bashrc /var/www/.bashrc ; \
   chown www-data:www-data /var/www/.bashrc ;
 
 #==================
