@@ -30,9 +30,9 @@ stages:
     - docker pull --quiet $CI_REGISTRY_IMAGE/$IMAGE || true
   script:
     - echo "Build $IMAGE_VERSION with Drupal:$IMAGE_TAG PHP:$PHP_VERSION Node:$NODE_VERSION"
-    - PHP_VERSION="$PHP_VERSION" envsubst < "./drupal/tests/test_php.py" > "./drupal/tests/test_php.py"
-    - NODE_VERSION="$NODE_VERSION" envsubst < "./drupal/tests/test_packages.py" > "./drupal/tests/test_packages.py"
-    - DRUPAL_VERSION="$IMAGE_TAG" envsubst < "./drupal/tests/test_drush.py" > "./drupal/tests/test_drush.py"
+    - PHP_VERSION="$PHP_VERSION" envsubst < "./drupal/tests/test_php.py.tpl" > "./drupal/tests/test_php.py"
+    - NODE_VERSION="$NODE_VERSION" envsubst < "./drupal/tests/test_packages.py.tpl" > "./drupal/tests/test_packages.py"
+    - DRUPAL_VERSION="$IMAGE_TAG" envsubst < "./drupal/tests/test_drush.py.tpl" > "./drupal/tests/test_drush.py"
     - docker build
       --tag $CI_REGISTRY_IMAGE/$IMAGE
       --tag $RELEASE_IMAGE/$IMAGE
