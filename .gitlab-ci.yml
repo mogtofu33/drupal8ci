@@ -10,8 +10,13 @@ variables:
     value: "1"
     description: Publish the image to docker, set 0 to not publish.
 
+stages:
+  - prepare
+  - build
+
 .build_template:
   image: docker:latest
+  stage: build
   services:
     - docker:dind
   needs:
@@ -47,9 +52,6 @@ variables:
     reports:
       junit: junit.xml
 
-stages:
-  - prepare
-  - build
 
 env:
   stage: prepare
