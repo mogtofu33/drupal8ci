@@ -30,6 +30,7 @@ stages:
     - docker pull --quiet $CI_REGISTRY_IMAGE/$IMAGE || true
   script:
     - echo "Build $IMAGE_VERSION with Drupal:$IMAGE_TAG PHP:$PHP_VERSION Node:$NODE_VERSION"
+    - apk add --no-cache envsubst
     - PHP_VERSION="$PHP_VERSION" envsubst < "./drupal/tests/test_php.py.tpl" > "./drupal/tests/test_php.py"
     - NODE_VERSION="$NODE_VERSION" envsubst < "./drupal/tests/test_packages.py.tpl" > "./drupal/tests/test_packages.py"
     - DRUPAL_VERSION="$IMAGE_TAG" envsubst < "./drupal/tests/test_drush.py.tpl" > "./drupal/tests/test_drush.py"
@@ -51,7 +52,6 @@ stages:
   artifacts:
     reports:
       junit: junit.xml
-
 
 env:
   stage: prepare
