@@ -23,12 +23,10 @@ LABEL org.label-schema.vendor="dev-drupal.com"
 
 # Install needed programs.
 RUN \
-  apt-get update ; \
-  apt-get install --no-install-recommends -y \
+  apt-get -qq update ; \
+  apt-get -qq install --no-install-recommends -y \
     apt-transport-https \
     bc \
-    ca-certificates \
-    curl \
     gettext-base \
     git \
     gnupg2 \
@@ -39,13 +37,12 @@ RUN \
     unzip \
     vim \
     xsltproc ; \
-  apt-get clean ; \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ;
 
 #==================
 # Install Nodejs, Yarn.
 # https://github.com/nodesource/distributions#installation-instructions
-RUN set -uex; \
+RUN set -ue; \
   mkdir -p /etc/apt/keyrings; \
   curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
     | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg; \
@@ -54,8 +51,8 @@ RUN set -uex; \
   # Install Yarn.
   curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - ; \
   echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list ; \
-  apt-get update ; \
-  apt-get install --no-install-recommends -y \
+  apt-get -qq update ; \
+  apt-get -qq install --no-install-recommends -y \
     nodejs \
     yarn \
     # Required for Drush sql commands.
@@ -69,13 +66,12 @@ RUN set -uex; \
     libssl-dev \
     libxslt-dev ; \
   # https://github.com/mlocati/docker-php-extension-installer
-  docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp ; \
+  docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp > /dev/null ; \
   # Pin xdebug for db error, @see https://www.drupal.org/project/drupal/issues/3405976#comment-15346751
-  pecl channel-update pecl.php.net && pecl install imagick xdebug-3.2.2 ; \
-  docker-php-ext-enable imagick xdebug ; \
+  pecl channel-update pecl.php.net && pecl install imagick xdebug-3.2.2 > /dev/null ; \
+  docker-php-ext-enable imagick xdebug > /dev/null ; \
   # Cleanup.
   docker-php-source delete ; \
-  apt-get clean ; \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #==================
@@ -97,7 +93,7 @@ WORKDIR /opt/drupal
 USER root
 
 #==================
-# Install Drupal core:dev, Drush for a module.
+# Install Drupal core:dev and Drush.
 RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
     composer require -n --dev --working-dir="/opt/drupal" \
     "drupal/core-dev:^${IMAGE_TAG}" "drush/drush" ; \
