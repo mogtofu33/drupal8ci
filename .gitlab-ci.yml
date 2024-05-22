@@ -10,39 +10,19 @@ variables:
     value: "1"
     description: Publish the image to docker, set 0 to not publish.
 
-default:
+.build_template:
   image: docker:latest
   services:
     - docker:dind
+  needs:
+    - env
   before_script:
     - docker --version
-    - source VERSION.env
     # Pull base image from Docker hub.
     - docker pull --quiet $IMAGE_BASE || true
     # Login to Gitlab and pull current image if exist.
     - echo "$CI_JOB_TOKEN" | docker login registry.gitlab.com --username gitlab-ci-token --password-stdin
     - docker pull --quiet $CI_REGISTRY_IMAGE/$IMAGE || true
-  artifacts:
-    reports:
-      junit: junit.xml
-
-stages:
-  - prepare
-  - build
-
-env:
-  stage: prepare
-  image: alpine:latest
-  script:
-    - echo "Set env variables from dotenv."
-  artifacts:
-    reports:
-      dotenv: VERSION.env
-
-.build_test:
-  stage: build
-  needs:
-    - env
   script:
     - echo "Build $IMAGE_VERSION with Drupal:$IMAGE_TAG PHP:$PHP_VERSION Node:$NODE_VERSION"
     - PHP_VERSION="$PHP_VERSION" envsubst < "./drupal/tests/test_php.py" > "./drupal/tests/test_php.py"
@@ -63,9 +43,25 @@ env:
     # Login to Docker hub and push.
     - echo "$RELEASE_PASSWORD" | docker login $RELEASE_REGISTRY --username $RELEASE_USER --password-stdin
     - docker push --quiet $RELEASE_IMAGE/$IMAGE
+  artifacts:
+    reports:
+      junit: junit.xml
+
+stages:
+  - prepare
+  - build
+
+env:
+  stage: prepare
+  image: alpine:latest
+  script:
+    - echo "Set env variables from dotenv."
+  artifacts:
+    reports:
+      dotenv: VERSION.env
 
 previous:
-  extends: .build_test
+  extends: .build_template
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
@@ -73,7 +69,7 @@ previous:
     PHP_VERSION: $DRUPAL_PREVIOUS_PHP
 
 current:
-  extends: .build_test
+  extends: .build_template
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
@@ -82,7 +78,7 @@ current:
 
 # Enabled only when next version is stable
 .next:
-  extends: .build_test
+  extends: .build_template
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
@@ -90,7 +86,7 @@ current:
     PHP_VERSION: $DRUPAL_NEXT_PHP
 
 chrome-headless:
-  extends: .build_test
+  extends: .build_template
   variables:
     IMAGE_BASE: debian:bullseye-slim
     IMAGE: chrome-headless:${CI_COMMIT_BRANCH}
