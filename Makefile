@@ -1,13 +1,21 @@
-IMAGE_VERSION=1.3
-NODE_VERSION=18
+#!make
 
-# Must match with .gitlab-ci.yml
-DRUPAL_PREVIOUS=10.1
-DRUPAL_PREVIOUS_PHP=8.1
-DRUPAL_CURRENT=10.2
-DRUPAL_CURRENT_PHP=8.2
-DRUPAL_NEXT=11
-DRUPAL_NEXT_PHP=8.2
+.PHONY: help build test
+
+ifneq (,$(wildcard ./VERSION.env))
+include VERSION.env
+endif
+
+ifeq ($(origin IMAGE_VERSION),undefined)
+$(error Missing env variable IMAGE_VERSION!)
+endif
+
+help:
+	@sed \
+		-e '/^[a-zA-Z0-9_\-]*:.*##/!d' \
+		-e 's/:.*##\s*/:/' \
+		-e 's/^\(.\+\):\(.*\)/$(shell tput setaf 6)\1$(shell tput sgr0):\2/' \
+		$(MAKEFILE_LIST) | column -c2 -t -s :
 
 define build
 	@echo "Build $(1) with Drupal:$(2) PHP:$(3) Node:$(4)..."
@@ -30,12 +38,12 @@ define test
 	@docker exec -w /tests test-ci-$(1) pytest-3
 endef
 
-build:
+build: ## Locally build images
 	$(call build,${IMAGE_VERSION},${DRUPAL_PREVIOUS},${DRUPAL_PREVIOUS_PHP},${NODE_VERSION})
 	$(call build,${IMAGE_VERSION},${DRUPAL_CURRENT},${DRUPAL_CURRENT_PHP},${NODE_VERSION})
 # $(call build,${IMAGE_VERSION},${DRUPAL_NEXT},${DRUPAL_NEXT_PHP},${NODE_VERSION})
 
-test:
+test: ## Locally test images
 	$(call test,${DRUPAL_PREVIOUS})
 	$(call test,${DRUPAL_CURRENT})
 # $(call test,${DRUPAL_NEXT})

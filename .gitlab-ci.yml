@@ -1,6 +1,4 @@
 variables:
-  IMAGE_VERSION: '1.3'
-  NODE_VERSION: '18'
   BUILD_DIR: './drupal'
   # Docker variables.
   DOCKER_HOST: tcp://docker:2375
@@ -18,6 +16,7 @@ default:
     - docker:dind
   before_script:
     - docker --version
+    - source VERSION.env
     # Pull base image from Docker hub.
     - docker pull --quiet $IMAGE_BASE || true
     # Login to Gitlab and pull current image if exist.
@@ -28,10 +27,22 @@ default:
       junit: junit.xml
 
 stages:
+  - prepare
   - build
+
+env:
+  stage: prepare
+  image: alpine:latest
+  script:
+    - echo "Set env variables from dotenv."
+  artifacts:
+    reports:
+      dotenv: VERSION.env
 
 .build_test:
   stage: build
+  needs:
+    - env
   script:
     - echo "Build $IMAGE_VERSION with Drupal:$IMAGE_TAG PHP:$PHP_VERSION Node:$NODE_VERSION"
     - PHP_VERSION="$PHP_VERSION" envsubst < "./drupal/tests/test_php.py" > "./drupal/tests/test_php.py"
@@ -48,7 +59,7 @@ stages:
       $BUILD_DIR
     - docker images
     - docker push --quiet $CI_REGISTRY_IMAGE/$IMAGE
-    - if [[ -d ./$BUILD_DIR/tests ]]; then ./.gitlab-ci/run-tests.sh $CI_REGISTRY_IMAGE/$IMAGE; fi;
+    - if [[ -d $BUILD_DIR/tests ]]; then ./.gitlab-ci/run-tests.sh $CI_REGISTRY_IMAGE/$IMAGE; fi;
     # Login to Docker hub and push.
     - echo "$RELEASE_PASSWORD" | docker login $RELEASE_REGISTRY --username $RELEASE_USER --password-stdin
     - docker push --quiet $RELEASE_IMAGE/$IMAGE
@@ -58,24 +69,25 @@ previous:
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
-    IMAGE_TAG: '10.1'
-    PHP_VERSION: '8.1'
+    IMAGE_TAG: $DRUPAL_PREVIOUS
+    PHP_VERSION: $DRUPAL_PREVIOUS_PHP
 
 current:
   extends: .build_test
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
-    IMAGE_TAG: '10.2'
-    PHP_VERSION: '8.2'
+    IMAGE_TAG: $DRUPAL_CURRENT
+    PHP_VERSION: $DRUPAL_CURRENT_PHP
 
+# Enabled only when next version is stable
 .next:
   extends: .build_test
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
-    IMAGE_TAG: '11'
-    PHP_VERSION: '8.3'
+    IMAGE_TAG: $DRUPAL_NEXT
+    PHP_VERSION: $DRUPAL_NEXT_PHP
 
 chrome-headless:
   extends: .build_test

@@ -1,13 +1,14 @@
 ARG IMAGE_TAG=10.2
 ARG PHP_VERSION=8.2
 
-# https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION/apache-buster/Dockerfile
+# https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
+
+ARG IMAGE_VERSION=1.0
+ARG NODE_VERSION=20
 
 ARG IMAGE_TAG=10.2
 ARG PHP_VERSION=8.2
-ARG NODE_VERSION=18
-ARG IMAGE_VERSION=1.3
 
 LABEL name="drupal-ci-${IMAGE_TAG}"
 LABEL maintainer="jean@dev-drupal.com"
@@ -44,7 +45,6 @@ RUN \
 #==================
 # Install Nodejs, Yarn.
 # https://github.com/nodesource/distributions#installation-instructions
-# @todo replace with nvm?
 RUN set -uex; \
   mkdir -p /etc/apt/keyrings; \
   curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \

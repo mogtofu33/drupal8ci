@@ -1,6 +1,6 @@
 FROM debian:bullseye-slim
 
-ARG IMAGE_VERSION='1.3'
+ARG IMAGE_VERSION=1.0
 
 LABEL name="chrome-headless"
 LABEL maintainer="jean@dev-drupal.com"
