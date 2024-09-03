@@ -1,5 +1,5 @@
-ARG IMAGE_TAG=10.2
-ARG PHP_VERSION=8.2
+ARG IMAGE_TAG=11.0
+ARG PHP_VERSION=8.3
 
 # https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
@@ -7,8 +7,8 @@ FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
 ARG IMAGE_VERSION=1.0
 ARG NODE_VERSION=20
 
-ARG IMAGE_TAG=10.2
-ARG PHP_VERSION=8.2
+ARG IMAGE_TAG=11.0
+ARG PHP_VERSION=8.3
 
 LABEL name="drupal-ci-${IMAGE_TAG}"
 LABEL maintainer="jean@dev-drupal.com"
@@ -67,9 +67,8 @@ RUN set -ue; \
     libxslt-dev ; \
   # https://github.com/mlocati/docker-php-extension-installer
   docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp > /dev/null ; \
-  # Pin xdebug for db error, @see https://www.drupal.org/project/drupal/issues/3405976#comment-15346751
-  pecl channel-update pecl.php.net && pecl install imagick xdebug-3.2.2 > /dev/null ; \
-  docker-php-ext-enable imagick xdebug > /dev/null ; \
+  pecl channel-update pecl.php.net && pecl install xdebug ; \
+  docker-php-ext-enable xdebug > /dev/null ; \
   # Cleanup.
   docker-php-source delete ; \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
