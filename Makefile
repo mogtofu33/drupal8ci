@@ -41,9 +41,9 @@ endef
 build: ## Locally build images
 	$(call build,${IMAGE_VERSION},${DRUPAL_PREVIOUS},${DRUPAL_PREVIOUS_PHP},${NODE_VERSION})
 	$(call build,${IMAGE_VERSION},${DRUPAL_CURRENT},${DRUPAL_CURRENT_PHP},${NODE_VERSION})
-# $(call build,${IMAGE_VERSION},${DRUPAL_NEXT},${DRUPAL_NEXT_PHP},${NODE_VERSION})
+	$(call build,${IMAGE_VERSION},${DRUPAL_NEXT},${DRUPAL_NEXT_PHP},${NODE_VERSION})
 
 test: ## Locally test images previously built with `build` command
 	$(call test,${DRUPAL_PREVIOUS})
 	$(call test,${DRUPAL_CURRENT})
-# $(call test,${DRUPAL_NEXT})
+	$(call test,${DRUPAL_NEXT})
