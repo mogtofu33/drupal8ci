@@ -79,7 +79,7 @@ current:
     PHP_VERSION: $DRUPAL_CURRENT_PHP
 
 # Enabled only when next version is stable
-.next:
+next:
   extends: .build_template
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
