@@ -1,5 +1,5 @@
-ARG IMAGE_TAG=11.1
-ARG PHP_VERSION=8.3
+ARG IMAGE_TAG=11.2
+ARG PHP_VERSION=8.4
 
 # https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
@@ -7,8 +7,8 @@ FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
 ARG IMAGE_VERSION=1.0
 ARG NODE_VERSION=20
 
-ARG IMAGE_TAG=11.1
-ARG PHP_VERSION=8.3
+ARG IMAGE_TAG=11.2
+ARG PHP_VERSION=8.4
 
 LABEL name="drupal-ci-${IMAGE_TAG}"
 LABEL maintainer="jean@dev-drupal.com"
