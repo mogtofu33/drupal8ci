@@ -47,3 +47,11 @@ test: ## Locally test images previously built with `build` command
 	$(call test,${DRUPAL_PREVIOUS})
 	$(call test,${DRUPAL_CURRENT})
 	$(call test,${DRUPAL_NEXT})
+
+test-clean:
+	@ docker stop test-ci-$(DRUPAL_PREVIOUS)
+	@ docker rm test-ci-$(DRUPAL_PREVIOUS)
+	@ docker stop test-ci-$(DRUPAL_CURRENT)
+	@ docker rm test-ci-$(DRUPAL_CURRENT)
+	@ docker stop test-ci-$(DRUPAL_NEXT)
+	@ docker rm test-ci-$(DRUPAL_NEXT)
