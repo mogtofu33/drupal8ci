@@ -55,3 +55,11 @@ test-clean:
 	@ docker rm test-ci-$(DRUPAL_CURRENT)
 	@ docker stop test-ci-$(DRUPAL_NEXT)
 	@ docker rm test-ci-$(DRUPAL_NEXT)
+
+build-next:
+	$(call build,${IMAGE_VERSION},${DRUPAL_NEXT},${DRUPAL_NEXT_PHP},${NODE_VERSION})
+test-next:
+	$(call test,${DRUPAL_NEXT})
+test-clean-next:
+	@ docker stop test-ci-$(DRUPAL_NEXT)
+	@ docker rm test-ci-$(DRUPAL_NEXT)
