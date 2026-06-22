@@ -16,7 +16,7 @@ variables:
     value: "1"
     description: Run the current job, set 0 to skip.
   RUN_NEXT:
-    value: "1"
+    value: "0"
     description: Run the next job, set 0 to skip.
   RUN_CHROME_HEADLESS:
     value: "1"
