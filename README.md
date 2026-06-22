@@ -1,8 +1,8 @@
-# Drupal 11 CI Docker image for Gitlab CI
+# Drupal 10 CI Docker image for Gitlab CI
 
 ## Details
 
-[Drupal 11](https://www.drupal.org) ci image based on official [docker Drupal](https://github.com/docker-library/drupal)
+[Drupal 10](https://www.drupal.org) ci image based on official [docker Drupal](https://github.com/docker-library/drupal)
 with some Php/NodeJs tools needed for CI or Local Build/Test/Lint.
 
 Used with project [Gitlab CI Drupal](https://gitlab.com/mog33/gitlab-ci-drupal).
@@ -40,14 +40,14 @@ To use with a local Drupal managed by Composer, mount your Drupal on `/opt/drupa
 
 ## Build
 
-CI variable `CI_DO_RELEASE`, default to `1` to push to Docker hub.
+CI variable `DO_RELEASE`, default to `1` to push to Docker hub.
 
 ## Tests
 
 Tests with [infratest](https://testinfra.readthedocs.io/en/latest/).
 
 ```bash
-docker run -it --rm mogtofu33/drupal8ci:11.x-dev-11.1 /tests/prepare-tests.sh && pytest
+docker run -it --rm mogtofu33/drupal8ci:10.x-dev-10.6 /tests/prepare-tests.sh && pytest
 ```
 
 ----
