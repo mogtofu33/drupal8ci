@@ -1,5 +1,5 @@
-ARG IMAGE_TAG=11.3
-ARG PHP_VERSION=8.5
+ARG IMAGE_TAG=10.6
+ARG PHP_VERSION=8.4
 
 # https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
@@ -9,8 +9,8 @@ SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 ARG IMAGE_VERSION=1.0
 ARG NODE_VERSION=22
 
-ARG IMAGE_TAG=11.3
-ARG PHP_VERSION=8.5
+ARG IMAGE_TAG=10.6
+ARG PHP_VERSION=8.4
 
 LABEL name="drupal-ci-${IMAGE_TAG}"
 LABEL maintainer="jean@dev-drupal.com"
@@ -85,9 +85,7 @@ USER root
 #==================
 # Install Drupal core:dev and Drush.
 # @todo remove guzzle workaround when https://www.drupal.org/project/drupal/issues/3603733
-RUN GUZZLE_ALIAS=$([ "${IMAGE_TAG}" = "11.3" ] && echo "7.10.0" || echo "7.9.3") ; \
-    GUZZLE_PROMISES_ALIAS=$([ "${IMAGE_TAG}" = "11.3" ] && echo "2.3.1" || echo "2.2.0") ; \
-  COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
+RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
     composer require \
       --no-ansi \
       --no-interaction \
@@ -96,8 +94,8 @@ RUN GUZZLE_ALIAS=$([ "${IMAGE_TAG}" = "11.3" ] && echo "7.10.0" || echo "7.9.3")
       --working-dir="/opt/drupal" \
       "drupal/core-dev:^${IMAGE_TAG}" \
       drush/drush \
-      "guzzlehttp/guzzle:7.12.1 as ${GUZZLE_ALIAS}" \
-      "guzzlehttp/promises:2.5.0 as ${GUZZLE_PROMISES_ALIAS}" \
+      "guzzlehttp/guzzle:7.12.1 as 7.9.3" \
+      "guzzlehttp/promises:2.5.0 as 2.2.0" \
       "guzzlehttp/psr7:2.12.1 as 2.10.4" \
       --with-all-dependencies ; \
   composer clear-cache

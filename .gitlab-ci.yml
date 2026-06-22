@@ -19,7 +19,7 @@ variables:
     value: "0"
     description: Run the next job, set 0 to skip.
   RUN_CHROME_HEADLESS:
-    value: "1"
+    value: "0"
     description: Run the chrome-headless job, set 0 to skip.
 
 stages:
