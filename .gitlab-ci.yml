@@ -54,22 +54,6 @@ env:
     reports:
       dotenv: VERSION.env
 
-previous_lts:
-  extends: .build_template
-  variables:
-    IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
-    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
-    IMAGE_TAG: $DRUPAL_PREVIOUS_LTS
-    PHP_VERSION: $DRUPAL_PREVIOUS_LTS_PHP
-
-previous_minor:
-  extends: .build_template
-  variables:
-    IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
-    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
-    IMAGE_TAG: $DRUPAL_PREVIOUS_MINOR
-    PHP_VERSION: $DRUPAL_PREVIOUS_MINOR_PHP
-
 previous:
   extends: .build_template
   variables:
