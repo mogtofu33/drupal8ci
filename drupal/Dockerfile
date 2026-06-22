@@ -1,5 +1,5 @@
 ARG IMAGE_TAG=11.3
-ARG PHP_VERSION=8.4
+ARG PHP_VERSION=8.5
 
 # https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
@@ -8,7 +8,7 @@ ARG IMAGE_VERSION=1.0
 ARG NODE_VERSION=22
 
 ARG IMAGE_TAG=11.3
-ARG PHP_VERSION=8.4
+ARG PHP_VERSION=8.5
 
 LABEL name="drupal-ci-${IMAGE_TAG}"
 LABEL maintainer="jean@dev-drupal.com"
@@ -21,8 +21,8 @@ LABEL org.label-schema.url="https://mog33.gitlab.io/gitlab-ci-drupal"
 LABEL org.label-schema.vcs-url="https://gitlab.com/gitlab-ci-drupal/drupal-ci-images"
 LABEL org.label-schema.vendor="dev-drupal.com"
 
-# Install needed programs.
-RUN \
+# Install needed programs, PHP extensions, and update composer.
+RUN set -ue ; \
   apt-get -qq update ; \
   apt-get -qq install --no-install-recommends -y \
     apt-transport-https \
@@ -31,51 +31,37 @@ RUN \
     git \
     gnupg2 \
     jq \
-    software-properties-common \
     ssh \
     sudo \
     unzip \
     vim \
-    xsltproc ; \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ;
-
-#==================
-# Install Nodejs, Yarn.
-# https://github.com/nodesource/distributions#installation-instructions
-RUN set -ue; \
-  mkdir -p /etc/apt/keyrings; \
-  curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
-    | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg; \
-  echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_VERSION}.x nodistro main" \
-    > /etc/apt/sources.list.d/nodesource.list; \
-  # Install Yarn.
-  curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - ; \
-  echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list ; \
-  apt-get -qq update ; \
-  apt-get -qq install --no-install-recommends -y \
-    nodejs \
-    yarn \
-    # Required for Drush sql commands.
     mariadb-client \
     postgresql-client \
-    # Install PHP extensions.
     libicu-dev \
     imagemagick \
     libmagickwand-dev \
     libnss3-dev \
     libssl-dev \
-    libxslt-dev ; \
-  # https://github.com/mlocati/docker-php-extension-installer
-  docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl opcache exif ftp > /dev/null ; \
-  pecl channel-update pecl.php.net && pecl install xdebug ; \
-  docker-php-ext-enable xdebug > /dev/null ; \
-  # Cleanup.
+    libxslt-dev \
+    xsltproc ; \
+  docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl exif ; \
+  pecl channel-update pecl.php.net && \
+    pecl install apcu xdebug imagick ; \
+  docker-php-ext-enable apcu xdebug imagick ; \
   docker-php-source delete ; \
+  /usr/local/bin/composer selfupdate ; \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #==================
-# Install composer third party.
-RUN /usr/local/bin/composer selfupdate
+# Install Nodejs, Yarn.
+# https://github.com/nodesource/distributions#installation-instructions
+RUN set -ue ; \
+  curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - ; \
+  apt-get install -y nodejs ; \
+  rm -rf /var/lib/apt/lists/* ; \
+  corepack enable ; \
+  corepack prepare yarn@4.2.2 --activate
+
 COPY --chown=www-data:www-data composer.json /var/www/.composer/composer.json
 
 USER www-data
@@ -96,9 +82,6 @@ USER root
 RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
     composer require --dev --working-dir="/opt/drupal" "drupal/core-dev:^${IMAGE_TAG}" drush/drush --with-all-dependencies ; \
   composer clear-cache
-
-RUN /opt/drupal/vendor/bin/drush --version
-RUN /opt/drupal/vendor/bin/phpunit --version
 
 #==================
 # Include testing code.

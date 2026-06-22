@@ -39,25 +39,46 @@ define test
 endef
 
 build: ## Locally build images
-	$(call build,${IMAGE_VERSION},${DRUPAL_PREVIOUS_LTS},${DRUPAL_PREVIOUS_LTS_PHP=8.4
-},${NODE_VERSION})
+	$(call build,${IMAGE_VERSION},${DRUPAL_PREVIOUS_LTS},${DRUPAL_PREVIOUS_LTS_PHP},${NODE_VERSION})
 	$(call build,${IMAGE_VERSION},${DRUPAL_PREVIOUS_MINOR},${DRUPAL_PREVIOUS_MINOR_PHP},${NODE_VERSION})
 	$(call build,${IMAGE_VERSION},${DRUPAL_PREVIOUS},${DRUPAL_PREVIOUS_PHP},${NODE_VERSION})
 	$(call build,${IMAGE_VERSION},${DRUPAL_CURRENT},${DRUPAL_CURRENT_PHP},${NODE_VERSION})
 	$(call build,${IMAGE_VERSION},${DRUPAL_NEXT},${DRUPAL_NEXT_PHP},${NODE_VERSION})
 
 test: ## Locally test images previously built with `build` command
+	$(call test,${DRUPAL_PREVIOUS_LTS})
+	$(call test,${DRUPAL_PREVIOUS_MINOR})
 	$(call test,${DRUPAL_PREVIOUS})
 	$(call test,${DRUPAL_CURRENT})
 	$(call test,${DRUPAL_NEXT})
 
 test-clean:
+	@ docker stop test-ci-$(DRUPAL_PREVIOUS_LTS)
+	@ docker rm test-ci-$(DRUPAL_PREVIOUS_LTS)
+	@ docker stop test-ci-$(DRUPAL_PREVIOUS_MINOR)
+	@ docker rm test-ci-$(DRUPAL_PREVIOUS_MINOR)
 	@ docker stop test-ci-$(DRUPAL_PREVIOUS)
 	@ docker rm test-ci-$(DRUPAL_PREVIOUS)
 	@ docker stop test-ci-$(DRUPAL_CURRENT)
 	@ docker rm test-ci-$(DRUPAL_CURRENT)
 	@ docker stop test-ci-$(DRUPAL_NEXT)
 	@ docker rm test-ci-$(DRUPAL_NEXT)
+
+build-previous:
+	$(call build,${IMAGE_VERSION},${DRUPAL_PREVIOUS},${DRUPAL_PREVIOUS_PHP},${NODE_VERSION})
+test-previous:
+	$(call test,${DRUPAL_PREVIOUS})
+test-clean-previous:
+	@ docker stop test-ci-$(DRUPAL_PREVIOUS)
+	@ docker rm test-ci-$(DRUPAL_PREVIOUS)
+
+build-current:
+	$(call build,${IMAGE_VERSION},${DRUPAL_CURRENT},${DRUPAL_CURRENT_PHP},${NODE_VERSION})
+test-current:
+	$(call test,${DRUPAL_CURRENT})
+test-clean-current:
+	@ docker stop test-ci-$(DRUPAL_CURRENT)
+	@ docker rm test-ci-$(DRUPAL_CURRENT)
 
 build-next:
 	$(call build,${IMAGE_VERSION},${DRUPAL_NEXT},${DRUPAL_NEXT_PHP},${NODE_VERSION})
