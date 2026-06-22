@@ -4,6 +4,8 @@ ARG PHP_VERSION=8.5
 # https://github.com/docker-library/drupal/blob/master/$IMAGE_TAG/php$PHP_VERSION
 FROM drupal:${IMAGE_TAG}-php${PHP_VERSION}
 
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
+
 ARG IMAGE_VERSION=1.0
 ARG NODE_VERSION=22
 
@@ -22,8 +24,7 @@ LABEL org.label-schema.vcs-url="https://gitlab.com/gitlab-ci-drupal/drupal-ci-im
 LABEL org.label-schema.vendor="dev-drupal.com"
 
 # Install needed programs, PHP extensions, and update composer.
-RUN set -ue ; \
-  apt-get -qq update ; \
+RUN apt-get -qq update ; \
   apt-get -qq install --no-install-recommends -y \
     apt-transport-https \
     bc \
@@ -56,8 +57,7 @@ RUN set -ue ; \
 #==================
 # Install Nodejs, Yarn.
 # https://github.com/nodesource/distributions#installation-instructions
-RUN set -ue ; \
-  curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - ; \
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - ; \
   apt-get install -y nodejs ; \
   rm -rf /var/lib/apt/lists/* ; \
   corepack enable ; \
@@ -71,7 +71,11 @@ USER www-data
 WORKDIR /var/www/.composer
 
 # Install our tools, see composer.json
-RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 composer --no-interaction install ; \
+RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
+  composer install \
+    --no-ansi \
+    --no-interaction \
+    --no-progress ; \
   composer clear-cache
 
 WORKDIR /opt/drupal
@@ -82,6 +86,8 @@ USER root
 # Install Drupal core:dev and Drush.
 # @todo remove guzzle workaround when https://www.drupal.org/project/drupal/issues/3603733
 RUN GUZZLE_ALIAS=$([ "${PHP_VERSION}" = "8.5" ] && echo "7.10.0" || echo "7.9.3") ; \
+    GUZZLE_PROMISES_ALIAS=$([ "${PHP_VERSION}" = "8.5" ] && echo "2.3.1" || echo "2.2.0") ; \
+    GUZZLE_PSR7_ALIAS=$([ "${PHP_VERSION}" = "8.5" ] && echo "2.10.4" || echo "2.7.1") ; \
   COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
     composer require \
       --no-ansi \
@@ -92,8 +98,8 @@ RUN GUZZLE_ALIAS=$([ "${PHP_VERSION}" = "8.5" ] && echo "7.10.0" || echo "7.9.3"
       "drupal/core-dev:^${IMAGE_TAG}" \
       drush/drush \
       "guzzlehttp/guzzle:7.12.1 as ${GUZZLE_ALIAS}" \
-      "guzzlehttp/promises:2.5.0 as 2.3.1" \
-      "guzzlehttp/psr7:2.12.1 as 2.10.4" \
+      "guzzlehttp/promises:2.5.0 as ${GUZZLE_PROMISES_ALIAS}" \
+      "guzzlehttp/psr7:2.12.1 as ${GUZZLE_PSR7_ALIAS}" \
       --with-all-dependencies ; \
   composer clear-cache
 
