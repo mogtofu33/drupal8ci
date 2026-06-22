@@ -5,19 +5,20 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "edgedesign/phpqa": "^1.27",
-        "consolidation/robo": "^5.1",
-        "drupal/coder": "^8.3.30",
-        "dealerdirect/phpcodesniffer-composer-installer": "^1.1.2",
-        "phpstan/phpstan": "^1.12.28",
+        "edgedesign/phpqa": "^1.27.2",
+        "consolidation/robo": "^5.1.1",
+        "drupal/coder": "^8.3.31",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.2.1",
+        "phpstan/phpstan": "^1.12.33",
         "phpstan/extension-installer": "^1.4.3",
         "phpstan/phpstan-deprecation-rules": "^1.2.1",
         "mglaman/phpstan-drupal": "^1.3.9",
         "php-parallel-lint/php-parallel-lint": "^1.4",
         "pdepend/pdepend": "^2.16.2",
-        "phpmetrics/phpmetrics": "^2.9",
-        "cmgmyr/phploc": "^8.0.6",
-        "phpmd/phpmd": "^2.15"
+        "phpmetrics/phpmetrics": "^2.9.1",
+        "cmgmyr/phploc": "^8.0.7",
+        "phpmd/phpmd": "^2.15",
+        "drush/drush": ">=13.7.3"
     },
     "config": {
         "allow-plugins": {

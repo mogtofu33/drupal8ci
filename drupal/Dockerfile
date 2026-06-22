@@ -44,9 +44,10 @@ RUN set -ue ; \
     libssl-dev \
     libxslt-dev \
     xsltproc ; \
-  docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl exif ; \
+  # Reduce verbosity.
+  docker-php-ext-install intl xsl mysqli bcmath calendar sockets pcntl exif > /dev/null ; \
   pecl channel-update pecl.php.net && \
-    pecl install apcu xdebug imagick ; \
+    pecl install apcu xdebug imagick > /dev/null ; \
   docker-php-ext-enable apcu xdebug imagick ; \
   docker-php-source delete ; \
   /usr/local/bin/composer selfupdate ; \
@@ -79,10 +80,10 @@ USER root
 
 #==================
 # Install Drupal core:dev and Drush.
-RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
+# RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
     # composer require --dev --working-dir="/opt/drupal" "drupal/core-dev:^${IMAGE_TAG}" drush/drush --with-all-dependencies ; \
-    composer require --dev --working-dir="/opt/drupal" drush/drush --with-all-dependencies ; \
-  composer clear-cache
+    # composer require --dev --working-dir="/opt/drupal" drush/drush --with-all-dependencies ; \
+  # composer clear-cache
 
 #==================
 # Include testing code.
