@@ -80,7 +80,8 @@ USER root
 #==================
 # Install Drupal core:dev and Drush.
 RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
-    composer require --dev --working-dir="/opt/drupal" "drupal/core-dev:^${IMAGE_TAG}" drush/drush --with-all-dependencies ; \
+    # composer require --dev --working-dir="/opt/drupal" "drupal/core-dev:^${IMAGE_TAG}" drush/drush --with-all-dependencies ; \
+    composer require --dev --working-dir="/opt/drupal" drush/drush --with-all-dependencies ; \
   composer clear-cache
 
 #==================
