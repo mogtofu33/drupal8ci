@@ -5,10 +5,11 @@ def test_php_version(host):
   assert host.check_output('php -v').startswith('PHP $PHP_VERSION')
 
 @pytest.mark.parametrize("name", [
+  ("apcu"),
   ("bcmath"),
   ("calendar"),
   ("exif"),
-  ("ftp"),
+  ("imagick"),
   ("intl"),
   ("mysqli"),
   ("OPcache"),
