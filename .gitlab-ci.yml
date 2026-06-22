@@ -1,3 +1,10 @@
+workflow:
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      variables:
+        DO_RELEASE: "1"
+    - when: always
+
 variables:
   BUILD_DIR: './drupal'
   # Docker variables.
@@ -7,7 +14,7 @@ variables:
   # Enable buildkit to use '--from-cache' when 'docker build'.
   DOCKER_BUILDKIT: 1
   DO_RELEASE:
-    value: "1"
+    value: "0"
     description: Publish the image to docker, set 0 to not publish.
   RUN_PREVIOUS:
     value: "1"
@@ -71,7 +78,7 @@ previous:
     - if: '$RUN_PREVIOUS == "1"'
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
-    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
+    IMAGE: drupal-ci:${CI_COMMIT_REF_NAME}-${IMAGE_TAG}
     IMAGE_TAG: $DRUPAL_PREVIOUS
     PHP_VERSION: $DRUPAL_PREVIOUS_PHP
 
@@ -81,7 +88,7 @@ current:
     - if: '$RUN_CURRENT == "1"'
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
-    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
+    IMAGE: drupal-ci:${CI_COMMIT_REF_NAME}-${IMAGE_TAG}
     IMAGE_TAG: $DRUPAL_CURRENT
     PHP_VERSION: $DRUPAL_CURRENT_PHP
 
@@ -92,7 +99,7 @@ next:
     - if: '$RUN_NEXT == "1"'
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
-    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
+    IMAGE: drupal-ci:${CI_COMMIT_REF_NAME}-${IMAGE_TAG}
     IMAGE_TAG: $DRUPAL_NEXT
     PHP_VERSION: $DRUPAL_NEXT_PHP
 
@@ -102,7 +109,7 @@ chrome-headless:
     - if: '$RUN_CHROME_HEADLESS == "1"'
   variables:
     IMAGE_BASE: debian:bullseye-slim
-    IMAGE: chrome-headless:${CI_COMMIT_BRANCH}
+    IMAGE: chrome-headless:${CI_COMMIT_REF_NAME}
     BUILD_DIR: chrome-headless
     IMAGE_TAG: ''
     PHP_VERSION: ''
