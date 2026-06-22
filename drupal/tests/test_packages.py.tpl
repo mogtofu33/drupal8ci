@@ -12,7 +12,6 @@ import pytest
   ("mariadb-client"),
   ("postgresql-client"),
   ("nodejs"),
-  ("yarn"),
 ])
 def test_packages_installed(host, name):
   ''' Test a minimum of required packages '''
@@ -21,3 +20,6 @@ def test_packages_installed(host, name):
 
 def test_node(host):
   assert host.check_output('node -v').startswith('v$NODE_VERSION')
+
+def test_yarn(host):
+  assert host.check_output('yarn -v').startswith('4')
