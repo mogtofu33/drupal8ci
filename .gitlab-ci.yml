@@ -34,15 +34,7 @@ stages:
     - PHP_VERSION="$PHP_VERSION" envsubst < "./drupal/tests/test_php.py.tpl" > "./drupal/tests/test_php.py"
     - NODE_VERSION="$NODE_VERSION" envsubst < "./drupal/tests/test_packages.py.tpl" > "./drupal/tests/test_packages.py"
     - DRUPAL_VERSION="$IMAGE_TAG" envsubst < "./drupal/tests/test_drush.py.tpl" > "./drupal/tests/test_drush.py"
-    - docker build
-      --tag $CI_REGISTRY_IMAGE/$IMAGE
-      --tag $RELEASE_IMAGE/$IMAGE
-      --build-arg IMAGE_VERSION=$IMAGE_VERSION
-      --build-arg IMAGE_TAG=$IMAGE_TAG
-      --build-arg PHP_VERSION=$PHP_VERSION
-      --build-arg NODE_VERSION=$NODE_VERSION
-      --compress
-      $BUILD_DIR
+    - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE --tag $RELEASE_IMAGE/$IMAGE --build-arg IMAGE_VERSION=$IMAGE_VERSION --build-arg IMAGE_TAG=$IMAGE_TAG --build-arg PHP_VERSION=$PHP_VERSION --build-arg NODE_VERSION=$NODE_VERSION --compress $BUILD_DIR
     - docker images
     - docker push --quiet $CI_REGISTRY_IMAGE/$IMAGE
     - if [[ -d $BUILD_DIR/tests ]]; then ./.gitlab-ci/run-tests.sh $CI_REGISTRY_IMAGE/$IMAGE; fi;
@@ -62,6 +54,22 @@ env:
     reports:
       dotenv: VERSION.env
 
+previous_lts:
+  extends: .build_template
+  variables:
+    IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
+    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
+    IMAGE_TAG: $DRUPAL_PREVIOUS_LTS
+    PHP_VERSION: $DRUPAL_PREVIOUS_LTS_PHP
+
+previous_minor:
+  extends: .build_template
+  variables:
+    IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
+    IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
+    IMAGE_TAG: $DRUPAL_PREVIOUS_MINOR
+    PHP_VERSION: $DRUPAL_PREVIOUS_MINOR_PHP
+
 previous:
   extends: .build_template
   variables:
@@ -79,7 +87,7 @@ current:
     PHP_VERSION: $DRUPAL_CURRENT_PHP
 
 # Enabled only when next version is stable
-next:
+.next:
   extends: .build_template
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
