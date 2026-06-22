@@ -81,7 +81,8 @@ USER root
 #==================
 # Install Drupal core:dev and Drush.
 # @todo remove guzzle workaround when https://www.drupal.org/project/drupal/issues/3603733
-RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
+RUN GUZZLE_ALIAS=$([ "${PHP_VERSION}" = "8.5" ] && echo "7.10.0" || echo "7.9.3") ; \
+  COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
     composer require \
       --no-ansi \
       --no-interaction \
@@ -90,7 +91,7 @@ RUN COMPOSER_MEMORY_LIMIT=-1 COMPOSER_ALLOW_SUPERUSER=1 \
       --working-dir="/opt/drupal" \
       "drupal/core-dev:^${IMAGE_TAG}" \
       drush/drush \
-      "guzzlehttp/guzzle:7.12.1 as 7.10.0" \
+      "guzzlehttp/guzzle:7.12.1 as ${GUZZLE_ALIAS}" \
       "guzzlehttp/promises:2.5.0 as 2.3.1" \
       "guzzlehttp/psr7:2.12.1 as 2.10.4" \
       --with-all-dependencies ; \

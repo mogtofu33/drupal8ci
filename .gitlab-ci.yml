@@ -9,6 +9,18 @@ variables:
   DO_RELEASE:
     value: "1"
     description: Publish the image to docker, set 0 to not publish.
+  RUN_PREVIOUS:
+    value: "1"
+    description: Run the previous job, set 0 to skip.
+  RUN_CURRENT:
+    value: "1"
+    description: Run the current job, set 0 to skip.
+  RUN_NEXT:
+    value: "1"
+    description: Run the next job, set 0 to skip.
+  RUN_CHROME_HEADLESS:
+    value: "1"
+    description: Run the chrome-headless job, set 0 to skip.
 
 stages:
   - prepare
@@ -56,6 +68,8 @@ env:
 
 previous:
   extends: .build_template
+  rules:
+    - if: '$RUN_PREVIOUS == "1"'
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
@@ -64,6 +78,8 @@ previous:
 
 current:
   extends: .build_template
+  rules:
+    - if: '$RUN_CURRENT == "1"'
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
@@ -71,8 +87,10 @@ current:
     PHP_VERSION: $DRUPAL_CURRENT_PHP
 
 # Enabled only when next version is stable
-.next:
+next:
   extends: .build_template
+  rules:
+    - if: '$RUN_NEXT == "1"'
   variables:
     IMAGE_BASE: drupal:${IMAGE_TAG}-php${PHP_VERSION}
     IMAGE: drupal-ci:${CI_COMMIT_BRANCH}-${IMAGE_TAG}
@@ -81,6 +99,8 @@ current:
 
 chrome-headless:
   extends: .build_template
+  rules:
+    - if: '$RUN_CHROME_HEADLESS == "1"'
   variables:
     IMAGE_BASE: debian:bullseye-slim
     IMAGE: chrome-headless:${CI_COMMIT_BRANCH}
