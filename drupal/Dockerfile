@@ -96,8 +96,8 @@ RUN GUZZLE_ALIAS=$([ "${IMAGE_TAG}" = "10.6" ] && echo "7.10.0" || echo "7.9.3")
       --working-dir="/opt/drupal" \
       "drupal/core-dev:^${IMAGE_TAG}" \
       drush/drush \
-      "guzzlehttp/guzzle:7.12.1 as 7.9.3" \
-      "guzzlehttp/promises:2.5.0 as 2.2.0" \
+      "guzzlehttp/guzzle:7.12.1 as ${GUZZLE_ALIAS}" \
+      "guzzlehttp/promises:2.5.0 as ${GUZZLE_PROMISES_ALIAS}" \
       "guzzlehttp/psr7:2.12.1 as 2.10.4" \
       --with-all-dependencies ; \
   composer clear-cache
